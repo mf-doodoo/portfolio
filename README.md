@@ -1,26 +1,37 @@
 # portfolio
-My portfolio website.
-
-## About
-This is a personal portfolio website showcasing my projects and skills.
-
-## Setup
-1. Clone the repository
-2. Open `index.html` in your web browser
-
-## Structure
-- `index.html` - Main HTML file with website structure
-- `styles.css` - CSS styling for the website
-- `script.js` - JavaScript for smooth scrolling and navigation
+My portfolio website with interactive 3D elements using Three.js.
 
 ## Features
-- Responsive design
-- Smooth scrolling navigation
-- Project showcase section
-- Contact information
+- Interactive 3D geometric shapes (torus knot, icosahedron, octahedron)
+- Mouse-responsive camera movement
+- Modern glassmorphism UI design
+- Fully responsive layout
+- Built with Three.js and Vite
 
-## Customization
-Edit the content in `index.html` to add your own:
-- Personal information
-- Projects
-- Contact details
+## Getting Started
+
+### Installation
+```bash
+npm install
+```
+
+### Development
+```bash
+npm run dev
+```
+Open http://localhost:5173 in your browser.
+
+### Build for Production
+```bash
+npm run build
+```
+
+### Preview Production Build
+```bash
+npm run preview
+```
+
+## Technologies Used
+- Three.js v0.160.0 - 3D graphics library
+- Vite v7.3.1 - Build tool and dev server
+- HTML5, CSS3, JavaScript (ES6+)

@@ -3,77 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="My Portfolio Website">
-    <title>Portfolio</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>My Portfolio - Interactive 3D</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="container">
-                <h1 class="logo">Portfolio</h1>
-                <ul class="nav-links">
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+    <div id="canvas-container" aria-label="Interactive 3D geometric shapes animation"></div>
+    
+    <div class="content">
+        <header>
+            <h1>Welcome to My Portfolio</h1>
+            <p class="tagline">Full-Stack Developer & 3D Enthusiast</p>
+        </header>
 
-    <main>
-        <section id="hero" class="hero">
-            <div class="container">
-                <h1>Welcome to My Portfolio</h1>
-                <p>Building amazing things with code</p>
-            </div>
+        <section class="about">
+            <h2>About Me</h2>
+            <p>I'm a passionate developer who loves creating interactive web experiences. This portfolio showcases my work with modern web technologies including Three.js for 3D graphics.</p>
         </section>
 
-        <section id="about" class="about">
-            <div class="container">
-                <h2>About Me</h2>
-                <p>Hello! I'm passionate about creating innovative solutions and building great projects.</p>
-            </div>
-        </section>
-
-        <section id="projects" class="projects">
-            <div class="container">
-                <h2>Projects</h2>
-                <div class="project-grid">
-                    <div class="project-card">
-                        <h3>Project 1</h3>
-                        <p>Description of your first project goes here.</p>
-                    </div>
-                    <div class="project-card">
-                        <h3>Project 2</h3>
-                        <p>Description of your second project goes here.</p>
-                    </div>
-                    <div class="project-card">
-                        <h3>Project 3</h3>
-                        <p>Description of your third project goes here.</p>
-                    </div>
+        <section class="projects">
+            <h2>Projects</h2>
+            <div class="project-grid">
+                <div class="project-card">
+                    <h3>3D Web Visualizations</h3>
+                    <p>Interactive 3D experiences built with Three.js</p>
+                </div>
+                <div class="project-card">
+                    <h3>Web Applications</h3>
+                    <p>Full-stack applications with modern frameworks</p>
+                </div>
+                <div class="project-card">
+                    <h3>Creative Coding</h3>
+                    <p>Experimental projects exploring WebGL and shaders</p>
                 </div>
             </div>
         </section>
 
-        <section id="contact" class="contact">
-            <div class="container">
-                <h2>Contact</h2>
-                <p>Get in touch with me:</p>
-                <ul class="contact-links">
-                    <li>Email: <a href="mailto:your.email@example.com">your.email@example.com</a></li>
-                    <li>GitHub: <a href="https://github.com/mf-doodoo" target="_blank">@mf-doodoo</a></li>
-                </ul>
-            </div>
+        <section class="contact">
+            <h2>Get In Touch</h2>
+            <p>Interested in working together? Let's connect!</p>
         </section>
-    </main>
+    </div>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 Portfolio. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script src="script.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>

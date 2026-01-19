@@ -1,0 +1,20 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "description": "My portfolio website with 3D elements",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["portfolio", "3d", "threejs"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  }
+}
