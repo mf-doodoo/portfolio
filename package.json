@@ -8,13 +8,18 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "keywords": ["portfolio", "3d", "threejs"],
+  "keywords": [
+    "portfolio",
+    "3d",
+    "threejs"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "vite": "^7.3.1"
   },
   "dependencies": {
+    "cannon-es": "^0.20.0",
     "three": "^0.160.0"
   }
 }
