@@ -166,86 +166,95 @@ function spawnLetters(position) {
   
   // Get the current word to spawn
   const item = navItems[currentWordIndex];
+  const word = item.text;
   
-  // Create text geometry
-  const textGeometry = new TextGeometry(item.text, {
-    font: font,
-    size: 0.3,
-    depth: 0.1,
-    curveSegments: 12,
-    bevelEnabled: true,
-    bevelThickness: 0.02,
-    bevelSize: 0.01,
-    bevelSegments: 5
-  });
-  
-  textGeometry.computeBoundingBox();
-  
-  // Calculate bounding box BEFORE centering
-  const bbox = textGeometry.boundingBox;
-  const width = (bbox.max.x - bbox.min.x) || 1;
-  const height = (bbox.max.y - bbox.min.y) || 1;
-  const depth = (bbox.max.z - bbox.min.z) || 1;
-  
-  console.log(`Text "${item.text}" dimensions:`, width, height, depth);
-  
-  // Center the geometry
-  textGeometry.center();
-  
-  const textMaterial = new THREE.MeshPhongMaterial({ 
-    color: 0x00ff00,
-    emissive: 0x003300,
-    flatShading: false
-  });
-  
-  const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-  
-  // Create physics body as a box
-  const textShape = new CANNON.Box(new CANNON.Vec3(width / 2, height / 2, depth / 2));
-  const textBody = new CANNON.Body({ 
-    mass: 1,
-    linearDamping: 0.3,
-    angularDamping: 0.3
-  });
-  textBody.addShape(textShape);
-  
-  // Set spawn position at click location
-  const spawnX = position.x;
-  const spawnY = 2;
-  const spawnZ = position.z;
-  
-  textMesh.position.set(spawnX, spawnY, spawnZ);
-  textBody.position.set(spawnX, spawnY, spawnZ);
-  
-  // Add some initial velocity for more dynamic effect
-  textBody.velocity.set(
-    (Math.random() - 0.5) * 2,
-    Math.random() * 2 + 1,
-    (Math.random() - 0.5) * 2
-  );
-  
-  // Add some rotation
-  textBody.angularVelocity.set(
-    Math.random() - 0.5,
-    Math.random() - 0.5,
-    Math.random() - 0.5
-  );
+  // Spawn each letter separately
+  for (let i = 0; i < word.length; i++) {
+    const letter = word[i];
+    
+    // Create text geometry for single letter
+    const textGeometry = new TextGeometry(letter, {
+      font: font,
+      size: 0.3,
+      depth: 0.1,
+      curveSegments: 12,
+      bevelEnabled: true,
+      bevelThickness: 0.02,
+      bevelSize: 0.01,
+      bevelSegments: 5
+    });
+    
+    textGeometry.computeBoundingBox();
+    
+    // Calculate bounding box BEFORE centering
+    const bbox = textGeometry.boundingBox;
+    const width = (bbox.max.x - bbox.min.x) || 1;
+    const height = (bbox.max.y - bbox.min.y) || 1;
+    const depth = (bbox.max.z - bbox.min.z) || 1;
+    
+    // Center the geometry
+    textGeometry.center();
+    
+    const textMaterial = new THREE.MeshPhongMaterial({ 
+      color: 0x00ff00,
+      emissive: 0x003300,
+      flatShading: false
+    });
+    
+    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    
+    // Create physics body as a box
+    const textShape = new CANNON.Box(new CANNON.Vec3(width / 2, height / 2, depth / 2));
+    const textBody = new CANNON.Body({ 
+      mass: 1,
+      linearDamping: 0.3,
+      angularDamping: 0.3
+    });
+    textBody.addShape(textShape);
+    
+    // Spread letters around the click position
+    const spreadRadius = 0.5; // How far apart letters spawn
+    const angle = (i / word.length) * Math.PI * 2; // Arrange in a circle
+    
+    const spawnX = position.x + Math.cos(angle) * spreadRadius;
+    const spawnY = 2;
+    const spawnZ = position.z + Math.sin(angle) * spreadRadius;
+    
+    textMesh.position.set(spawnX, spawnY, spawnZ);
+    textBody.position.set(spawnX, spawnY, spawnZ);
+    
+    // Add random velocity for each letter
+    textBody.velocity.set(
+      (Math.random() - 0.5) * 3,
+      Math.random() * 3 + 2,
+      (Math.random() - 0.5) * 3
+    );
+    
+    // Add some rotation
+    textBody.angularVelocity.set(
+      (Math.random() - 0.5) * 2,
+      (Math.random() - 0.5) * 2,
+      (Math.random() - 0.5) * 2
+    );
 
-  world.addBody(textBody);
+    world.addBody(textBody);
 
-  // Store references
-  textMesh.userData = {
-    body: textBody,
-    url: item.url,
-    isClickable: true
-  };
-  
-  scene.add(textMesh);
-  letters.push(textMesh);
+    // Store references
+    textMesh.userData = {
+      body: textBody,
+      url: item.url,
+      word: item.text,
+      letter: letter,
+      isClickable: true
+    };
+    
+    scene.add(textMesh);
+    letters.push(textMesh);
+  }
   
   // Increment counter for next click
   currentWordIndex++;
-  console.log(`Spawned "${item.text}" (${currentWordIndex}/${navItems.length})`);
+  console.log(`Spawned "${item.text}" as ${word.length} separate letters (${currentWordIndex}/${navItems.length})`);
 }
 
 // Function to clear all letters
