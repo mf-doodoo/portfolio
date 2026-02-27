@@ -25,6 +25,9 @@ const mouse = new THREE.Vector2();
 // Click event listener
 window.addEventListener('click', onMouseClick, false);
 
+// Hover event listener
+window.addEventListener('mousemove', onMouseMove, false);
+
 function onMouseClick(event) {
   // Calculate mouse position in normalized device coordinates
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -43,6 +46,51 @@ function onMouseClick(event) {
       spawnLetters(point);
     }
   }
+}
+
+function onMouseMove(event) {
+  // Calculate mouse position in normalized device coordinates
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  
+  // Update the raycaster
+  raycaster.setFromCamera(mouse, camera);
+  
+  // Check for intersections with letters
+  const intersects = raycaster.intersectObjects(letters);
+  
+  if (intersects.length > 0) {
+    const hoveredLetter = intersects[0].object;
+    const wordToHighlight = hoveredLetter.userData.wordId;
+    
+    // If hovering over a different word than before, update highlighting
+    if (hoveredWord !== wordToHighlight) {
+      hoveredWord = wordToHighlight;
+      updateLetterGlow();
+    }
+  } else {
+    // Not hovering over any letter
+    if (hoveredWord !== null) {
+      hoveredWord = null;
+      updateLetterGlow();
+    }
+  }
+}
+
+function updateLetterGlow() {
+  letters.forEach(letter => {
+    const shouldGlow = (hoveredWord !== null && letter.userData.wordId === hoveredWord);
+    
+    if (shouldGlow) {
+      // Make it glow
+      letter.material.emissive.setHex(0xDDA0E8); // change to a purple glow
+      letter.material.emissiveIntensity = 0.5;
+    } else {
+      // Normal state
+      letter.material.emissive.setHex(0x003300);
+      letter.material.emissiveIntensity = 1;
+    }
+  });
 }
 
 
@@ -93,7 +141,7 @@ fontLoader.load(
 );
 
 
-// objects
+// plane
 const geometry = new THREE.PlaneGeometry( 3, 3);
 const material = new THREE.MeshPhongMaterial( { map: texture, side: THREE.DoubleSide } );
 const mesh = new THREE.Mesh( geometry, material );
@@ -109,6 +157,7 @@ world.addBody(groundBody);
 // keep the visual plane aligned with the physics ground
 mesh.position.copy(groundBody.position);
 mesh.quaternion.copy(groundBody.quaternion);
+
 
 // example dynamic box
 const boxShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
@@ -144,6 +193,7 @@ controls.update();
 // Array to store letter objects
 const letters = [];
 let currentWordIndex = 0; // Track which word to spawn next
+let hoveredWord = null; // Track which word is being hovered
 
 function spawnLetters(position) {
   if (!font) {
@@ -153,7 +203,7 @@ function spawnLetters(position) {
   
   // Define navigation options
   const navItems = [
-    { text: 'ABOUT', url: '/about' },
+    { text: 'ABOUT ME', url: '/about' },
     { text: 'CONTACT', url: '/contact' },
     { text: 'WORK', url: '/work' }
   ];
@@ -196,8 +246,8 @@ function spawnLetters(position) {
     textGeometry.center();
     
     const textMaterial = new THREE.MeshPhongMaterial({ 
-      color: 0x00ff00,
-      emissive: 0x003300,
+      color: 0x2BA3D6,
+      emissive: 0xDDA0E8,
       flatShading: false
     });
     
@@ -212,6 +262,7 @@ function spawnLetters(position) {
     });
     textBody.addShape(textShape);
     
+    /*
     // Spread letters around the click position
     const spreadRadius = 0.5; // How far apart letters spawn
     const angle = (i / word.length) * Math.PI * 2; // Arrange in a circle
@@ -219,15 +270,21 @@ function spawnLetters(position) {
     const spawnX = position.x + Math.cos(angle) * spreadRadius;
     const spawnY = 2;
     const spawnZ = position.z + Math.sin(angle) * spreadRadius;
-    
+    */
+
+    // Replace the angle/circle code with:
+    const spawnX = position.x + (i - word.length / 2) * 0.4;
+    const spawnY = 2;
+    const spawnZ = position.z;
+
     textMesh.position.set(spawnX, spawnY, spawnZ);
     textBody.position.set(spawnX, spawnY, spawnZ);
     
     // Add random velocity for each letter
     textBody.velocity.set(
-      (Math.random() - 0.5) * 3,
+      (Math.random() - 0.5) * 1,
       Math.random() * 3 + 2,
-      (Math.random() - 0.5) * 3
+      (Math.random() - 0.5) * 1
     );
     
     // Add some rotation
@@ -239,15 +296,16 @@ function spawnLetters(position) {
 
     world.addBody(textBody);
 
-    // Store references
+// Store references - ADD wordId to track which spawn this letter belongs to
     textMesh.userData = {
       body: textBody,
       url: item.url,
       word: item.text,
+      wordId: `${item.text}_${currentWordIndex}`, // Unique identifier for this word instance
       letter: letter,
       isClickable: true
     };
-    
+
     scene.add(textMesh);
     letters.push(textMesh);
   }
