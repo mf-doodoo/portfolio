@@ -61,7 +61,7 @@ function onMouseMove(event) {
   
   if (intersects.length > 0) {
     const hoveredLetter = intersects[0].object;
-    const wordToHighlight = hoveredLetter.userData.wordId;
+    const wordToHighlight = hoveredLetter.userData.wordId;  // use wordId to identify which word this letter belongs to 
     
     // If hovering over a different word than before, update highlighting
     if (hoveredWord !== wordToHighlight) {
@@ -159,15 +159,15 @@ mesh.position.copy(groundBody.position);
 mesh.quaternion.copy(groundBody.quaternion);
 
 
-// example dynamic box
-const boxShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5));
-const boxBody = new CANNON.Body({ mass: 1 });
+// example dynamic box physical mesh 
+const boxShape = new CANNON.Box(new CANNON.Vec3(0.25, 0.25, 0.25));
+const boxBody = new CANNON.Body({ mass: 0.25 });
 boxBody.addShape(boxShape);
 boxBody.position.set(0, 3, 0);
 world.addBody(boxBody);
 
 // create visual mesh for the box
-const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+const boxGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
 const boxMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
 const meshFromBox = new THREE.Mesh(boxGeometry, boxMaterial);
 scene.add(meshFromBox);
@@ -194,6 +194,13 @@ controls.update();
 const letters = [];
 let currentWordIndex = 0; // Track which word to spawn next
 let hoveredWord = null; // Track which word is being hovered
+
+const wordColors = [
+  { base: 0x00ff00, glow: 0x00ff00, emissive: 0x003300 }, // ABOUT ME - Green
+  { base: 0x0088ff, glow: 0x00ddff, emissive: 0x002244 }, // CONTACT - Blue
+  { base: 0xff0088, glow: 0xff00ff, emissive: 0x440022 }  // WORK - Magenta/Pink
+];
+
 
 function spawnLetters(position) {
   if (!font) {
