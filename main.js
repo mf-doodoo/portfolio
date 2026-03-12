@@ -4,6 +4,34 @@ import {FontLoader} from 'three/addons/loaders/FontLoader.js';
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
 import * as CANNON from 'cannon-es';
 
+// CREATE OVERLAY ELEMENT - Add this here!
+const style = document.createElement('style');
+style.textContent = `
+  #word-overlay {
+    position: fixed;
+    top: 20%;
+    left: 20%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    font-weight: bold;
+    color: #ffffff;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  #word-overlay.visible {
+    opacity: 1;
+  }
+`;
+document.head.appendChild(style);
+
+const overlayElement = document.createElement('div');
+overlayElement.id = 'word-overlay';
+document.body.appendChild(overlayElement);
+
 const width = window.innerWidth, height = window.innerHeight;
 
 // init
@@ -36,6 +64,15 @@ function onMouseClick(event) {
   // Update the raycaster
   raycaster.setFromCamera(mouse, camera);
   
+  // Check letter clicks first
+  const letterIntersects = raycaster.intersectObjects(letters);
+  if (letterIntersects.length > 0) {
+    const word = letterIntersects[0].object.userData.word;
+    const url = letterIntersects[0].object.userData.url;
+    window.location.href = url; // Navigate to page
+    return;
+  }
+
   // Check for intersections with the plane
   const intersects = raycaster.intersectObject(mesh);
   
@@ -91,8 +128,20 @@ function updateLetterGlow() {
       letter.material.emissiveIntensity = 1;
     }
   });
-}
 
+    // Update overlay text
+  if (hoveredWord !== null) {
+    // Find the word text from any letter with this wordId
+    const firstLetter = letters.find(l => l.userData.wordId === hoveredWord);
+    if (firstLetter) {
+      overlayElement.textContent = firstLetter.userData.word;
+      overlayElement.classList.add('visible');
+    }
+  } else {
+    overlayElement.classList.remove('visible');
+  }
+
+}
 
 // put the camera on a pole (parent it to an object)
 // so we can spin the pole to move the camera around the scene
@@ -140,10 +189,25 @@ fontLoader.load(
   }
 );
 
+// Create a gradient texture for more control over toon shading
+const gradientTexture = new THREE.DataTexture(
+  new Uint8Array([0, 128, 255]), // 3 levels of shading
+  3, 1,
+  THREE.RedFormat
+);
+gradientTexture.needsUpdate = true;
+gradientTexture.minFilter = THREE.NearestFilter;
+gradientTexture.magFilter = THREE.NearestFilter;
+
+const textMaterial = new THREE.MeshToonMaterial({ 
+  color: 0x00ff00,
+  emissive: 0x003300,
+  gradientMap: gradientTexture // Apply the gradient
+});
 
 // plane
 const geometry = new THREE.PlaneGeometry( 3, 3);
-const material = new THREE.MeshPhongMaterial( { map: texture, side: THREE.DoubleSide } );
+const material = new THREE.MeshToonMaterial({ map: texture, side: THREE.DoubleSide });
 const mesh = new THREE.Mesh( geometry, material );
 mesh.rotation.x = -Math.PI / 2;  // Rotate plane to be horizontal
 scene.add( mesh );
@@ -168,16 +232,20 @@ world.addBody(boxBody);
 
 // create visual mesh for the box
 const boxGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-const boxMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+const boxMaterial = new THREE.MeshToonMaterial({ color: 0xff0000 });
 const meshFromBox = new THREE.Mesh(boxGeometry, boxMaterial);
 scene.add(meshFromBox);
-
 
 // lights
 const light = new THREE.AmbientLight( 0x404040 ); // soft white ambientlight
 //scene.add( light ); // light on the scene
 scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.3));
 camera.add( light ); // light on the camera
+
+// Add after your existing lights
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(5, 10, 5);
+scene.add(directionalLight);
 
 // renderer
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -252,10 +320,9 @@ function spawnLetters(position) {
     // Center the geometry
     textGeometry.center();
     
-    const textMaterial = new THREE.MeshPhongMaterial({ 
-      color: 0x2BA3D6,
-      emissive: 0xDDA0E8,
-      flatShading: false
+    const textMaterial = new THREE.MeshToonMaterial({ 
+    color: 0x00ff00,
+    emissive: 0x003300
     });
     
     const textMesh = new THREE.Mesh(textGeometry, textMaterial);
