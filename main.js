@@ -278,9 +278,9 @@ function spawnLetters(position) {
   
   // Define navigation options
   const navItems = [
-    { text: 'ABOUT ME', url: '/about' },
-    { text: 'CONTACT', url: '/contact' },
-    { text: 'WORK', url: '/work' }
+    { text: 'ABOUT ME', url: 'about_me.html' },
+    { text: 'CONTACT', url: 'contact.html' },
+    { text: 'WORK', url: 'work.html' }
   ];
   
   // If we've spawned all 3 words, clear everything and restart
@@ -289,6 +289,7 @@ function spawnLetters(position) {
     currentWordIndex = 0;
   }
   
+
   // Get the current word to spawn
   const item = navItems[currentWordIndex];
   const word = item.text;
@@ -336,8 +337,8 @@ function spawnLetters(position) {
     });
     textBody.addShape(textShape);
     
-    /*
-    // Spread letters around the click position
+    
+    /*/ Spread letters around the click position
     const spreadRadius = 0.5; // How far apart letters spawn
     const angle = (i / word.length) * Math.PI * 2; // Arrange in a circle
     
@@ -370,7 +371,7 @@ function spawnLetters(position) {
 
     world.addBody(textBody);
 
-// Store references - ADD wordId to track which spawn this letter belongs to
+  // Store references - ADD wordId to track which spawn this letter belongs to
     textMesh.userData = {
       body: textBody,
       url: item.url,
