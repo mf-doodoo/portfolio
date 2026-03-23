@@ -4,13 +4,15 @@ import {FontLoader} from 'three/addons/loaders/FontLoader.js';
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
 import * as CANNON from 'cannon-es';
 
-// CREATE OVERLAY ELEMENT - Add this here!
+// CREATE OVERLAY ELEMENT FOR DISPLAYING WORDS ON HOVER
 const style = document.createElement('style');
 style.textContent = `
+
+@media (max-width: 600px) {
   #word-overlay {
     position: fixed;
-    top: 20%;
-    left: 20%;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
     font-size: 72px;
     font-weight: bold;
@@ -25,6 +27,25 @@ style.textContent = `
   #word-overlay.visible {
     opacity: 1;
   }
+}
+
+@media (min-width: 601px) {
+  #word-overlay {
+    position: fixed;
+    top: 20%;
+    left: 20%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    font-weight: bold;
+    color: #ffffff;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+    font-family: 'Roboto', sans-serif;
+  }
+}
+
 `;
 document.head.appendChild(style);
 
@@ -33,6 +54,132 @@ overlayElement.id = 'word-overlay';
 document.body.appendChild(overlayElement);
 
 const width = window.innerWidth, height = window.innerHeight;
+
+// About overlay
+const aboutOverlay = document.createElement('div');
+aboutOverlay.id = 'about-overlay';
+aboutOverlay.className = 'page-overlay';
+aboutOverlay.innerHTML = `
+  <button class="close-btn">×</button>
+  <div class="overlay-content">
+    <h1>ABOUT ME</h1>
+    <p>Hi! I'm [Your Name], a [your role/profession].</p>
+    <p>I specialize in [your skills]...</p>
+    <h2>Skills</h2>
+    <ul>
+      <li>3D Design & Three.js</li>
+      <li>Web Development</li>
+      <li>Creative Coding</li>
+    </ul>
+  </div>
+`;
+document.body.appendChild(aboutOverlay);
+
+// Contact overlay
+const contactOverlay = document.createElement('div');
+contactOverlay.id = 'contact-overlay';
+contactOverlay.className = 'page-overlay';
+contactOverlay.innerHTML = `
+  <button class="close-btn">×</button>
+  <div class="overlay-content">
+    <h1>CONTACT</h1>
+    <div class="contact-info">
+      <p>Email: <a href="mailto:your@email.com">your@email.com</a></p>
+      <p>LinkedIn: <a href="https://linkedin.com/in/yourprofile" target="_blank">Your Profile</a></p>
+    </div>
+  </div>
+`;
+document.body.appendChild(contactOverlay);
+
+// Add CSS for overlays
+const overlayStyle = document.createElement('style');
+overlayStyle.textContent = `
+  .page-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px);
+    display: none;
+    z-index: 2000;
+    overflow-y: auto;
+    padding: 50px 20px;
+    box-sizing: border-box;
+  }
+  
+  .page-overlay.visible {
+    display: block;
+  }
+  
+  .overlay-content {
+    max-width: 800px;
+    margin: 0 auto;
+    color: #00ff00;
+    font-family: Arial, sans-serif;
+  }
+  
+  .overlay-content h1 {
+    font-size: 48px;
+    margin-bottom: 30px;
+    text-shadow: 0 0 20px #00ff00;
+  }
+  
+  .overlay-content h2 {
+    font-size: 32px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+  }
+  
+  .overlay-content p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  
+  .overlay-content ul {
+    font-size: 18px;
+    line-height: 2;
+  }
+  
+  .overlay-content a {
+    color: #00ff00;
+    text-decoration: none;
+    border-bottom: 1px solid #00ff00;
+  }
+  
+  .overlay-content a:hover {
+    text-shadow: 0 0 10px #00ff00;
+  }
+  
+  .close-btn {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    font-size: 50px;
+    color: #00ff00;
+    cursor: pointer;
+    background: none;
+    border: none;
+    z-index: 2001;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0;
+    transition: transform 0.2s;
+  }
+  
+  .close-btn:hover {
+    transform: scale(1.2);
+    text-shadow: 0 0 20px #00ff00;
+  }
+  
+  .contact-info {
+    margin-top: 40px;
+    padding-top: 40px;
+    border-top: 2px solid #00ff00;
+  }
+`;
+document.head.appendChild(overlayStyle);
 
 // init
 const camera = new THREE.PerspectiveCamera( 70, width / height, 0.01, 10 );
@@ -57,31 +204,35 @@ window.addEventListener('click', onMouseClick, false);
 window.addEventListener('mousemove', onMouseMove, false);
 
 function onMouseClick(event) {
-  // Calculate mouse position in normalized device coordinates
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-  
-  // Update the raycaster
   raycaster.setFromCamera(mouse, camera);
   
   // Check letter clicks first
   const letterIntersects = raycaster.intersectObjects(letters);
   if (letterIntersects.length > 0) {
-    const word = letterIntersects[0].object.userData.word;
-    const url = letterIntersects[0].object.userData.url;
-    window.location.href = url; // Navigate to page
+    const clickedLetter = letterIntersects[0].object;
+    const word = clickedLetter.userData.word;
+    
+    // Handle different actions based on word
+    if (word === 'WORK') {
+      // Navigate to separate page
+      window.location.href = 'work.html';
+    } else if (word === 'ABOUT') {
+      // Show overlay
+      showOverlay('about-overlay');
+    } else if (word === 'CONTACT') {
+      // Show overlay
+      showOverlay('contact-overlay');
+    }
+    
     return;
   }
-
-  // Check for intersections with the plane
-  const intersects = raycaster.intersectObject(mesh);
   
-  if (intersects.length > 0) {
-    const point = intersects[0].point;
-    console.log('Clicked on plane at:', point);
-    if (font) {
-      spawnLetters(point);
-    }
+  // Then check plane clicks
+  const planeIntersects = raycaster.intersectObject(mesh);
+  if (planeIntersects.length > 0 && font) {
+    spawnLetters(planeIntersects[0].point);
   }
 }
 
@@ -113,6 +264,29 @@ function onMouseMove(event) {
     }
   }
 }
+
+// Show overlay and pause 3D rendering
+function showOverlay(overlayId) {
+  const overlay = document.getElementById(overlayId);
+  overlay.classList.add('visible');
+  
+  // Pause 3D rendering to save performance
+  renderer.setAnimationLoop(null);
+  
+  // Add close button functionality
+  const closeBtn = overlay.querySelector('.close-btn');
+  closeBtn.onclick = () => closeOverlay(overlayId);
+}
+
+// Close overlay and resume 3D rendering
+function closeOverlay(overlayId) {
+  const overlay = document.getElementById(overlayId);
+  overlay.classList.remove('visible');
+  
+  // Resume 3D rendering
+  renderer.setAnimationLoop(animate);
+}
+
 
 function updateLetterGlow() {
   letters.forEach(letter => {
@@ -278,8 +452,8 @@ function spawnLetters(position) {
   
   // Define navigation options
   const navItems = [
-    { text: 'ABOUT ME', url: 'about_me.html' },
-    { text: 'CONTACT', url: 'contact.html' },
+    { text: 'ABOUT ME', url: '#about_me' },
+    { text: 'CONTACT', url: '#contact' },
     { text: 'WORK', url: 'work.html' }
   ];
   
