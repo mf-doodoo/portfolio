@@ -32,8 +32,8 @@ style.textContent = `
 @media (min-width: 601px) {
   #word-overlay {
     position: fixed;
-    top: 20%;
-    left: 20%;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
     font-size: 72px;
     font-weight: bold;
@@ -115,14 +115,14 @@ overlayStyle.textContent = `
   .overlay-content {
     max-width: 800px;
     margin: 0 auto;
-    color: #00ff00;
+    color: #ffffff;
     font-family: Arial, sans-serif;
   }
   
   .overlay-content h1 {
     font-size: 48px;
     margin-bottom: 30px;
-    text-shadow: 0 0 20px #00ff00;
+    text-shadow: 0 0 20px #ffffff;
   }
   
   .overlay-content h2 {
@@ -143,21 +143,21 @@ overlayStyle.textContent = `
   }
   
   .overlay-content a {
-    color: #00ff00;
+    color: #ffffff;
     text-decoration: none;
-    border-bottom: 1px solid #00ff00;
+    border-bottom: 1px solid #ffffff;
   }
   
   .overlay-content a:hover {
-    text-shadow: 0 0 10px #00ff00;
+    text-shadow: 0 0 10px #ffffff;
   }
   
   .close-btn {
     position: fixed;
-    top: 20px;
-    right: 30px;
+    top: 80%;
+    right: 50%;
     font-size: 50px;
-    color: #00ff00;
+    color: #ffffff;
     cursor: pointer;
     background: none;
     border: none;
@@ -170,13 +170,13 @@ overlayStyle.textContent = `
   
   .close-btn:hover {
     transform: scale(1.2);
-    text-shadow: 0 0 20px #00ff00;
+    text-shadow: 0 0 20px #ffffff;
   }
   
   .contact-info {
     margin-top: 40px;
     padding-top: 40px;
-    border-top: 2px solid #00ff00;
+    border-top: 2px solid #ffffff;
   }
 `;
 document.head.appendChild(overlayStyle);
@@ -191,7 +191,7 @@ const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) });
 
 //scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color( 0x000000 );
+scene.background = new THREE.Color( 0x27A9F5 );   //  background color
 
 // Raycaster for detecting clicks
 const raycaster = new THREE.Raycaster();
@@ -251,6 +251,9 @@ function onMouseMove(event) {
     const hoveredLetter = intersects[0].object;
     const wordToHighlight = hoveredLetter.userData.wordId;  // use wordId to identify which word this letter belongs to 
     
+    // Change cursor to pointer (hand)
+    document.body.style.cursor = 'pointer';
+
     // If hovering over a different word than before, update highlighting
     if (hoveredWord !== wordToHighlight) {
       hoveredWord = wordToHighlight;
@@ -258,6 +261,7 @@ function onMouseMove(event) {
     }
   } else {
     // Not hovering over any letter
+    document.body.style.cursor = 'default';  // Reset cursor
     if (hoveredWord !== null) {
       hoveredWord = null;
       updateLetterGlow();
@@ -334,7 +338,7 @@ window.addEventListener('resize', () => {
 });
 
 //load textures
-const planeSize = 40;
+const planeSize = 20;
  const loader = new THREE.TextureLoader();
 const texture = loader.load('textures/checker.png');
 texture.wrapS = THREE.RepeatWrapping;
@@ -379,13 +383,14 @@ const textMaterial = new THREE.MeshToonMaterial({
   gradientMap: gradientTexture // Apply the gradient
 });
 
-// plane
+// plane mesh
 const geometry = new THREE.PlaneGeometry( 3, 3);
 const material = new THREE.MeshToonMaterial({ map: texture, side: THREE.DoubleSide });
 const mesh = new THREE.Mesh( geometry, material );
 mesh.rotation.x = -Math.PI / 2;  // Rotate plane to be horizontal
 scene.add( mesh );
 
+// plane physics body
 const groundShape = new CANNON.Plane();
 const groundBody = new CANNON.Body({ mass: 0 });
 groundBody.addShape(groundShape);
@@ -432,6 +437,16 @@ document.body.appendChild( renderer.domElement );
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.update();
 
+// Spawn random geometry every few seconds
+setInterval(() => {
+  const randomPos = {
+    x: (Math.random() - 0.5) * 3,
+    y: 0,
+    z: (Math.random() - 0.5) * 3
+  };
+  spawnRandomGeometry(randomPos);
+}, 3000); // Every 3 seconds
+
 // Array to store letter objects
 const letters = [];
 let currentWordIndex = 0; // Track which word to spawn next
@@ -452,7 +467,7 @@ function spawnLetters(position) {
   
   // Define navigation options
   const navItems = [
-    { text: 'ABOUT ME', url: '#about_me' },
+    { text: 'ABOUT', url: '#about_me' },  //has to be ABOUT not ABOUT ME
     { text: 'CONTACT', url: '#contact' },
     { text: 'WORK', url: 'work.html' }
   ];
@@ -583,6 +598,87 @@ function clearAllLetters() {
   
   // Clear the array
   letters.length = 0;
+}
+
+// Function to spawn random geometrical objects
+function spawnRandomGeometry(position) {
+  // Array of possible geometries
+  const geometries = [
+    new THREE.BoxGeometry(0.3, 0.3, 0.3),
+    new THREE.SphereGeometry(0.2, 16, 16),
+    new THREE.ConeGeometry(0.2, 0.4, 16),
+    new THREE.CylinderGeometry(0.15, 0.15, 0.4, 16),
+    new THREE.TorusGeometry(0.15, 0.06, 16, 32),
+    new THREE.TetrahedronGeometry(0.25),
+    new THREE.OctahedronGeometry(0.2),
+    new THREE.IcosahedronGeometry(0.2)
+  ];
+  
+  // Pick a random geometry
+  const randomGeometry = geometries[Math.floor(Math.random() * geometries.length)];
+  
+  // Random color
+  const randomColor = Math.random() * 0xffffff;
+  
+  // Create material
+  const material = new THREE.MeshToonMaterial({ 
+    color: randomColor,
+    emissive: randomColor,
+    emissiveIntensity: 0.2
+  });
+  
+  const objectMesh = new THREE.Mesh(randomGeometry, material);
+  
+  // Create physics body based on geometry type
+  let shape;
+  if (randomGeometry instanceof THREE.SphereGeometry) {
+    shape = new CANNON.Sphere(0.2);
+  } else {
+    // Use box approximation for other shapes
+    shape = new CANNON.Box(new CANNON.Vec3(0.2, 0.2, 0.2));
+  }
+  
+  const objectBody = new CANNON.Body({ 
+    mass: 0.5,
+    linearDamping: 0.3,
+    angularDamping: 0.3
+  });
+  objectBody.addShape(shape);
+  
+  // Set spawn position
+  const spawnX = position.x + (Math.random() - 0.5) * 2;
+  const spawnY = position.y + 2;
+  const spawnZ = position.z + (Math.random() - 0.5) * 2;
+  
+  objectMesh.position.set(spawnX, spawnY, spawnZ);
+  objectBody.position.set(spawnX, spawnY, spawnZ);
+  
+  // Add random velocity
+  objectBody.velocity.set(
+    (Math.random() - 0.5) * 3,
+    Math.random() * 2 + 1,
+    (Math.random() - 0.5) * 3
+  );
+  
+  // Add rotation
+  objectBody.angularVelocity.set(
+    (Math.random() - 0.5) * 5,
+    (Math.random() - 0.5) * 5,
+    (Math.random() - 0.5) * 5
+  );
+  
+  world.addBody(objectBody);
+  
+  // Store reference to physics body
+  objectMesh.userData = {
+    body: objectBody,
+    isGeometry: true
+  };
+  
+  scene.add(objectMesh);
+  letters.push(objectMesh); // Reuse letters array for now
+  
+  return objectMesh;
 }
 
 // animation
