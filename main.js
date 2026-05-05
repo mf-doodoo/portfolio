@@ -65,7 +65,7 @@ aboutOverlay.innerHTML = `
     <h1>ABOUT ME</h1>
     <p>Hi! I'm [Your Name], a [your role/profession].</p>
     <p>I specialize in [your skills]...</p>
-    <h2>Skills</h2>
+    <h2>SKILLS</h2>
     <ul>
       <li>3D Design & Three.js</li>
       <li>Web Development</li>
@@ -203,6 +203,64 @@ window.addEventListener('click', onMouseClick, false);
 // Hover event listener
 window.addEventListener('mousemove', onMouseMove, false);
 
+// Drag & drop event listeners
+window.addEventListener('mousedown', onMouseDown, false);
+window.addEventListener('mouseup', onMouseUp, false);
+
+function onMouseDown(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  // Check for intersections with geometry objects
+  const intersects = raycaster.intersectObjects(geometryObjects);
+
+  if (intersects.length > 0) {
+    const hoveredObject = intersects[0].object;
+
+    if (hoveredObject.userData.isDraggable) {
+      isDragging = true;
+      draggedObject = hoveredObject;
+    
+
+    controls.enabled = false; // Disable orbit controls while dragging
+
+    // make object kinematic; not affected by physics but can affect other objects
+    if (draggedObject.userData.body) {
+      draggedObject.userData.body.type = CANNON.Body.KINEMATIC;
+      draggedObject.userData.body.velocity.set(0, 0, 0); // Stop any existing velocity
+      draggedObject.userData.body.angularVelocity.set(0, 0, 0); // Stop any existing angular velocity
+    }
+
+    // Set up the drag plane based on the camera's view and the intersection point
+    dragPlane.setFromNormalAndCoplanarPoint(
+      camera.getWorldDirection(dragPlane.normal),
+      intersects[0].point
+    );
+
+    dragOffset.copy(intersects[0].point).sub(draggedObject.position);
+
+    console.log('Started dragging object:', draggedObject.geometry.type);
+    }
+  }
+}
+
+function onMouseUp(event) {
+  if (isDragging && draggedObject) {
+    // Make the object dynamic again so it interacts with physics
+    if (draggedObject.userData.body) {
+      draggedObject.userData.body.type = CANNON.Body.DYNAMIC;
+    }
+
+    isDragging = false;
+    draggedObject = null;
+    controls.enabled = true;  //enable orbit controls after dragging
+
+    console.log('Stopped dragging object');
+  }
+} 
+
+
 function onMouseClick(event) {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -240,10 +298,35 @@ function onMouseMove(event) {
   // Calculate mouse position in normalized device coordinates
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-  
+
   // Update the raycaster
   raycaster.setFromCamera(mouse, camera);
   
+  // handle dragging
+  if (isDragging && draggedObject) {
+    // Find intersection point with the drag plane
+    if (raycaster.ray.intersectPlane(dragPlane, dragIntersection));
+
+    // update object position to follow the mouse, accounting for initial offset
+    const newPosition = dragIntersection.sub(dragOffset);
+    draggedObject.position.copy(newPosition);
+
+    // Update physics body position to match the dragged object
+    if (draggedObject.userData.body) {
+      draggedObject.userData.body.position.copy(newPosition);
+    }
+
+    document.body.style.cursor = 'grabbing'; // Change cursor to grabbing hand while dragging
+    return; // Skip hover effects while dragging
+  }
+
+    // Check for intersections with geometry objects for hover cursor
+  const geometryIntersects = raycaster.intersectObjects(geometryObjects);
+  if (geometryIntersects.length > 0) {
+    document.body.style.cursor = 'grab';
+    return; // Don't check letters if hovering over geometry
+  }
+
   // Check for intersections with letters
   const intersects = raycaster.intersectObjects(letters);
   
@@ -326,7 +409,6 @@ function updateLetterGlow() {
 const cameraPole = new THREE.Object3D();
 scene.add(cameraPole);
 cameraPole.add(camera);
-
 
 // responsive size
 window.addEventListener('resize', () => {
@@ -437,20 +519,22 @@ document.body.appendChild( renderer.domElement );
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.update();
 
-// Spawn random geometry every few seconds
-setInterval(() => {
-  const randomPos = {
-    x: (Math.random() - 0.5) * 3,
-    y: 0,
-    z: (Math.random() - 0.5) * 3
-  };
-  spawnRandomGeometry(randomPos);
-}, 3000); // Every 3 seconds
+
 
 // Array to store letter objects
 const letters = [];
 let currentWordIndex = 0; // Track which word to spawn next
 let hoveredWord = null; // Track which word is being hovered
+
+// drag & drop variables
+let isDragging = false;
+let draggedObject = null;
+let dragPlane = new THREE.Plane();
+let dragOffset = new THREE.Vector3();
+let dragIntersection = new THREE.Vector3();
+
+// Array to store geometry objects
+const geometryObjects = [];
 
 const wordColors = [
   { base: 0x00ff00, glow: 0x00ff00, emissive: 0x003300 }, // ABOUT ME - Green
@@ -600,6 +684,24 @@ function clearAllLetters() {
   letters.length = 0;
 }
 
+// spawn random number of geometrical objects on load
+function spawnInitialGeometry() {
+  const numberOfObjects = Math.floor(Math.random() * 6) + 5;  // Spawn between 5 and 10 objects
+
+  for (let i = 0; i < numberOfObjects; i++) {
+    const randomPos = {
+      x: (Math.random() - 0.5) * 5,  // Random X between -5 and 5
+      y: 0,
+      z: (Math.random() - 0.5) * 5
+    };
+    spawnRandomGeometry(randomPos);
+  }
+  console.log(`Spawned ${numberOfObjects} random geometrical objects on load`);
+}
+
+spawnInitialGeometry(); // Spawn random geometry on load 
+
+
 // Function to spawn random geometrical objects
 function spawnRandomGeometry(position) {
   // Array of possible geometries
@@ -672,14 +774,19 @@ function spawnRandomGeometry(position) {
   // Store reference to physics body
   objectMesh.userData = {
     body: objectBody,
-    isGeometry: true
+    isGeometry: true,  
+    isDraggable: true // Mark as draggable for potential future interaction
   };
   
   scene.add(objectMesh);
-  letters.push(objectMesh); // Reuse letters array for now
+  geometryObjects .push(objectMesh); // use geometryObjects array to track
   
   return objectMesh;
 }
+
+// Add axes helper for debugging; X = red, Y = green, Z = blue
+const axesHelper = new THREE.AxesHelper( 5 );
+scene.add( axesHelper );
 
 // animation
 function animate( time ) {
@@ -699,8 +806,16 @@ function animate( time ) {
     }
   });
 
+  // update geometry objects
+  geometryObjects.forEach(obj => {
+    if (obj.userData.body) {
+      obj.position.copy(obj.userData.body.position);
+      obj.quaternion.copy(obj.userData.body.quaternion);
+    }
+
   controls.update();
   renderer.render(scene, camera);
 
+  }
+);
 }
-    
