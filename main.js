@@ -8,49 +8,48 @@ import * as CANNON from 'cannon-es';
 const style = document.createElement('style');
 style.textContent = `
 
-@media (max-width: 600px) {
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #006eff;  /* Your desired background color */
+  }
+
   #word-overlay {
     position: fixed;
     top: 20%;
-    left: 50%;
+    left: 40%;
     transform: translate(-50%, -50%);
-    font-size: 72px;
+    font-size: 224px;
     font-weight: bold;
     color: #ffffff;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.3s ease;
-    z-index: 1000;
+    z-index: -1;
     font-family: 'Roboto', sans-serif;
   }
   
   #word-overlay.visible {
     opacity: 1;
-  }
-}
+        transition: opacity 0.3s ease;
 
-@media (min-width: 601px) {
-  #word-overlay {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 72px;
-    font-weight: bold;
-    color: #ffffff;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 1000;
-    font-family: 'Roboto', sans-serif;
   }
-}
+
+  #word-overlay.default-message {
+  opacity: 1;
+  z-index: -1;
+  font-size: 48px;
+  font-family: 'Roboto', sans-serif;
+  transition: opacity 0.3s ease;
 
 `;
+
 document.head.appendChild(style);
 
 const overlayElement = document.createElement('div');
 overlayElement.id = 'word-overlay';
+overlayElement.className = 'default-message';
+overlayElement.textContent = 'Hi, I\'M ARDIT!';
 document.body.appendChild(overlayElement);
 
 const width = window.innerWidth, height = window.innerHeight;
@@ -63,13 +62,15 @@ aboutOverlay.innerHTML = `
   <button class="close-btn">×</button>
   <div class="overlay-content">
     <h1>ABOUT ME</h1>
-    <p>Hi! I'm [Your Name], a [your role/profession].</p>
-    <p>I specialize in [your skills]...</p>
-    <h2>SKILLS</h2>
+    <p>Welcome to my portfolio! I'm a 3D artist and developer with a love for creating immersive experiences and videogames.</p>
+    <p>With a background in both art and programming, I specialize in 3D design, game development, and creative coding.
+    I enjoy pushing the boundaries of what's possible on the web and bringing my artistic visions to life through code.</p>
+    <h2>SKILLSET</h2>
     <ul>
-      <li>3D Design & Three.js</li>
-      <li>Web Development</li>
+      <li>2D Art</li>
+      <li>3D Modeling, Rigging & Animation</li>
       <li>Creative Coding</li>
+      <li>Game Development & Design</li>
     </ul>
   </div>
 `;
@@ -122,7 +123,6 @@ overlayStyle.textContent = `
   .overlay-content h1 {
     font-size: 48px;
     margin-bottom: 30px;
-    text-shadow: 0 0 20px #ffffff;
   }
   
   .overlay-content h2 {
@@ -191,7 +191,7 @@ const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) });
 
 //scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color( 0x27A9F5 );   //  background color
+scene.background = null;   //  background color
 
 // Raycaster for detecting clicks
 const raycaster = new THREE.Raycaster();
@@ -302,23 +302,28 @@ function onMouseMove(event) {
   // Update the raycaster
   raycaster.setFromCamera(mouse, camera);
   
-  // handle dragging
-  if (isDragging && draggedObject) {
-    // Find intersection point with the drag plane
-    if (raycaster.ray.intersectPlane(dragPlane, dragIntersection));
-
-    // update object position to follow the mouse, accounting for initial offset
-    const newPosition = dragIntersection.sub(dragOffset);
-    draggedObject.position.copy(newPosition);
-
-    // Update physics body position to match the dragged object
-    if (draggedObject.userData.body) {
-      draggedObject.userData.body.position.copy(newPosition);
-    }
-
-    document.body.style.cursor = 'grabbing'; // Change cursor to grabbing hand while dragging
-    return; // Skip hover effects while dragging
+  // // Handle dragging
+if (isDragging && draggedObject) {
+  // Calculate intersection with drag plane
+  raycaster.ray.intersectPlane(dragPlane, dragIntersection);
+  
+  // Update object position
+  const newPosition = dragIntersection.sub(dragOffset);
+  
+  // CLAMP Y position to prevent going below ground (y = 0)
+  const minHeight = 0.2; // Objects won't go below this height
+  newPosition.y = Math.max(newPosition.y, minHeight);
+  
+  draggedObject.position.copy(newPosition);
+  
+  // Update physics body position
+  if (draggedObject.userData.body) {
+    draggedObject.userData.body.position.copy(newPosition);
   }
+  
+  document.body.style.cursor = 'grabbing';
+  return; // Don't do letter hover while dragging
+}
 
     // Check for intersections with geometry objects for hover cursor
   const geometryIntersects = raycaster.intersectObjects(geometryObjects);
@@ -381,27 +386,30 @@ function updateLetterGlow() {
     
     if (shouldGlow) {
       // Make it glow
-      letter.material.emissive.setHex(0xDDA0E8); // change to a purple glow
-      letter.material.emissiveIntensity = 0.5;
+      letter.material.emissive.setHex(0xFF3300); // emissive color for hovered letters
+      letter.material.emissiveIntensity = 1;
     } else {
       // Normal state
-      letter.material.emissive.setHex(0x003300);
+      letter.material.emissive.setHex(0x00CEFF);  //emissive color for non-hovered letters
       letter.material.emissiveIntensity = 1;
     }
   });
 
-    // Update overlay text
+  // Update overlay text
   if (hoveredWord !== null) {
     // Find the word text from any letter with this wordId
     const firstLetter = letters.find(l => l.userData.wordId === hoveredWord);
     if (firstLetter) {
       overlayElement.textContent = firstLetter.userData.word;
+      overlayElement.classList.remove('default-message');  // Remove default class
       overlayElement.classList.add('visible');
     }
   } else {
-    overlayElement.classList.remove('visible');
+    // Show default message when not hovering
+    overlayElement.textContent = 'CLICK ON THE PLANE TO SPAWN MORE WORDS!';
+    overlayElement.classList.remove('visible');  // Remove visible class
+    overlayElement.classList.add('default-message');  // Add default class
   }
-
 }
 
 // put the camera on a pole (parent it to an object)
@@ -460,14 +468,14 @@ gradientTexture.minFilter = THREE.NearestFilter;
 gradientTexture.magFilter = THREE.NearestFilter;
 
 const textMaterial = new THREE.MeshToonMaterial({ 
-  color: 0x00ff00,
-  emissive: 0x003300,
+  color: 0x00EEFF,
+  emissive: 0xFF9CE8,
   gradientMap: gradientTexture // Apply the gradient
 });
 
 // plane mesh
-const geometry = new THREE.PlaneGeometry( 3, 3);
-const material = new THREE.MeshToonMaterial({ map: texture, side: THREE.DoubleSide });
+const geometry = new THREE.PlaneGeometry(5, 5);   
+const material = new THREE.MeshToonMaterial({ color: 0x00EEFF, side: THREE.FrontSide });
 const mesh = new THREE.Mesh( geometry, material );
 mesh.rotation.x = -Math.PI / 2;  // Rotate plane to be horizontal
 scene.add( mesh );
@@ -509,7 +517,7 @@ directionalLight.position.set(5, 10, 5);
 scene.add(directionalLight);
 
 // renderer
-const renderer = new THREE.WebGLRenderer( { antialias: true } );
+const renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true} );
 renderer.setSize( width, height );
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setAnimationLoop( animate );
@@ -537,7 +545,7 @@ let dragIntersection = new THREE.Vector3();
 const geometryObjects = [];
 
 const wordColors = [
-  { base: 0x00ff00, glow: 0x00ff00, emissive: 0x003300 }, // ABOUT ME - Green
+  { base: 0x000000, glow: 0x000000, emissive: 0x00EEFF }, // ABOUT ME - Green
   { base: 0x0088ff, glow: 0x00ddff, emissive: 0x002244 }, // CONTACT - Blue
   { base: 0xff0088, glow: 0xff00ff, emissive: 0x440022 }  // WORK - Magenta/Pink
 ];
@@ -595,8 +603,8 @@ function spawnLetters(position) {
     textGeometry.center();
     
     const textMaterial = new THREE.MeshToonMaterial({ 
-    color: 0x00ff00,
-    emissive: 0x003300
+    color: 0x000000,
+    emissive: 0xFF9CE8
     });
     
     const textMesh = new THREE.Mesh(textGeometry, textMaterial);
@@ -784,7 +792,7 @@ function spawnRandomGeometry(position) {
   return objectMesh;
 }
 
-// Add axes helper for debugging; X = red, Y = green, Z = blue
+// Add axis helper for debugging; X = red, Y = green, Z = blue
 const axesHelper = new THREE.AxesHelper( 5 );
 scene.add( axesHelper );
 
