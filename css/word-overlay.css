@@ -1,0 +1,31 @@
+#word-overlay {
+  position: fixed;
+  top: 20%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  font-size: 224px;
+  font-weight: bold;
+  color: #ffffff;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 0;  
+  font-family: 'Roboto', sans-serif;
+}
+
+/* When showing hovered word */
+#word-overlay.visible {
+  opacity: 1 !important;
+  transition: opacity 0.5s ease;
+  z-index: 0;  
+  font-size: 224px;
+}
+
+/* When showing default message */
+#word-overlay.default-message {
+  opacity: 1 !important;
+  transition: opacity 0.5s ease;
+  z-index: 0;  
+  font-size: 48px;
+  font-family: 'Roboto', sans-serif;
+}

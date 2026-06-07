@@ -1,0 +1,113 @@
+.page-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(10px);
+  display: none;
+  z-index: 2000;
+  overflow-y: auto;
+  padding: 50px 20px;
+  box-sizing: border-box;
+}
+
+.page-overlay.visible {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: overlaySlideUp 0.8s ease-in-out forwards;
+}
+
+.page-overlay.closing {
+  animation: overlaySlideDown 0.8s ease-in-out forwards;
+}
+
+@keyframes overlaySlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes overlaySlideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.overlay-content {
+  max-width: 800px;
+  margin: 0 auto;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+.overlay-content h1 {
+  font-size: 48px;
+  margin-bottom: 30px;
+  text-shadow: 0 0 20px #ffffff;
+}
+
+.overlay-content h2 {
+  font-size: 32px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.overlay-content p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.overlay-content ul {
+  font-size: 18px;
+  line-height: 2;
+}
+
+.overlay-content a {
+  color: #ffffff;
+  text-decoration: none;
+  border-bottom: 1px solid #ffffff;
+}
+
+.overlay-content a:hover {
+  text-shadow: 0 0 10px #ffffff;
+}
+
+.close-btn {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  font-size: 50px;
+  color: #ffffff;
+  cursor: pointer;
+  background: none;
+  border: none;
+  z-index: 2001;
+  font-weight: bold;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.2s;
+}
+
+.close-btn:hover {
+  transform: scale(1.2);
+  text-shadow: 0 0 20px #ffffff;
+}
+
+.contact-info {
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 2px solid #ffffff;
+}
