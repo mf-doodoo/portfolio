@@ -7,7 +7,7 @@ export function createOverlays() {
     <button class="close-btn">×</button>
     <div class="overlay-content">
       <h1>ABOUT ME</h1>
-      <p>Welcome to my portfolio! I'm a 3D artist and developer with a love for creating immersive experiences and videogames.</p>
+      <p>Welcome to my portfolio! I'm a 3D artist, game dev and illustrator based in Lucerne, Switzerland, with a love for creating and designing digital experiences and art.</p>
       <p>With a background in both art and programming, I specialize in 3D design, game development, and creative coding.
       I enjoy pushing the boundaries of what's possible on the web and bringing my artistic visions to life through code.</p>
       <h2>SKILLSET</h2>
@@ -28,10 +28,11 @@ export function createOverlays() {
   contactOverlay.innerHTML = `
     <button class="close-btn">×</button>
     <div class="overlay-content">
-      <h1>CONTACT</h1>
+      <h1>CONTACT ME</h1>
       <div class="contact-info">
-        <p>Email: <a href="mailto:your@email.com">your@email.com</a></p>
-        <p>LinkedIn: <a href="https://linkedin.com/in/yourprofile" target="_blank">Your Profile</a></p>
+        <p><a href="mailto:ardit.stojkaj@gmail.com">Mail</a></p>
+        <p><a href="https://www.linkedin.com/in/ardit-stojkaj-05466b168/" target="_blank">LinkedIn</a></p>
+        <p><a href="https://www.instagram.com/mf_doodoo/" Target="_blank">Instagram</a></p>
       </div>
     </div>
   `;

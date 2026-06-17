@@ -4,8 +4,8 @@ export function createIntro() {
   introPanel.innerHTML = `
     <div id="intro-container">
       <div class="intro-line" id="line-1">Hey there!</div>
-      <div class="intro-line" id="line-2">My name's Ardit.</div>
-      <div class="intro-line" id="line-3">Welcome to my page!</div>
+      <div class="intro-line" id="line-2">My name's Ardit</div>
+      <div class="intro-line" id="line-3">Welcome to my page</div>
     </div>
   `;
   document.body.appendChild(introPanel);
