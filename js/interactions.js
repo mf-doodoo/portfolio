@@ -80,29 +80,26 @@ function onMouseMove(event, raycaster, mouse, controls, scene, camera) {
 
   const app = window.portfolioApp;
 
-  // Handle dragging
-  if (app.isDragging && app.draggedObject) {
-    const dragPlane = new THREE.Plane();
-    dragPlane.setFromNormalAndCoplanarPoint(
-      camera.getWorldDirection(dragPlane.normal),
-      app.draggedObject.position
-    );
-    
-    const dragOffset = new THREE.Vector3();
-    const dragIntersection = new THREE.Vector3();
-    
-    raycaster.ray.intersectPlane(dragPlane, dragIntersection);
-    const newPosition = dragIntersection.sub(dragOffset);
-    newPosition.y = Math.max(newPosition.y, 0.2);
-    
-    app.draggedObject.position.copy(newPosition);
-    if (app.draggedObject.userData.body) {
-      app.draggedObject.userData.body.position.copy(newPosition);
-    }
-    
-    document.body.style.cursor = 'grabbing';
-    return;
+// Handle dragging
+if (app.isDragging && app.draggedObject) {
+  const dragIntersection = new THREE.Vector3();
+  
+  // Use stored dragPlane and dragOffset
+  raycaster.ray.intersectPlane(app.dragPlane, dragIntersection);
+  const newPosition = dragIntersection.sub(app.dragOffset);
+  newPosition.y = Math.max(newPosition.y, 0.2);
+  
+  app.draggedObject.position.copy(newPosition);
+  if (app.draggedObject.userData.body) {
+    app.draggedObject.userData.body.position.copy(newPosition);
+    // Keep velocity at zero while dragging
+    app.draggedObject.userData.body.velocity.set(0, 0, 0);
+    app.draggedObject.userData.body.angularVelocity.set(0, 0, 0);
   }
+  
+  document.body.style.cursor = 'grabbing';
+  return;
+}
 
   // Check geometry hover
   const geometryIntersects = raycaster.intersectObjects(app.geometryObjects);
@@ -141,17 +138,21 @@ function onMouseDown(event, raycaster, mouse, controls, camera) {
   if (intersects.length > 0 && intersects[0].object.userData.isDraggable) {
     controls.enabled = false;
     
+    // Store drag plane
     const dragPlane = new THREE.Plane();
     dragPlane.setFromNormalAndCoplanarPoint(
       camera.getWorldDirection(dragPlane.normal),
       intersects[0].point
     );
     
+    // Store drag offset - distance from click point to object center
     const dragOffset = new THREE.Vector3();
     dragOffset.copy(intersects[0].point).sub(intersects[0].object.position);
 
     app.isDragging = true;
     app.draggedObject = intersects[0].object;
+    app.dragPlane = dragPlane;           // Store these!
+    app.dragOffset = dragOffset;         // Store these!
   }
 }
 
@@ -165,6 +166,8 @@ function onMouseUp(controls) {
     
     app.isDragging = false;
     app.draggedObject = null;
+    app.dragPlane = null;       // Clean up
+    app.dragOffset = null;      // Clean up
     controls.enabled = true;
   }
 }
