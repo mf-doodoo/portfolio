@@ -84,24 +84,49 @@ function spawnRandomGeometry(position, config) {
   config.geometryObjects.push(objectMesh);
 }
 
-export function spawnLetters(position) {
+// Menu structure
+const menuStructure = {
+  main: [
+    { text: 'ABOUT', url: '#about', isSubmenu: false },
+    { text: 'CONTACT', url: '#contact', isSubmenu: false },
+    { text: 'WORK', url: null, isSubmenu: true }
+  ],
+  work: [
+    { text: '3D ART', url: 'work/3d-art.html', isSubmenu: false },
+    { text: 'ILLUSTRATION', url: 'work/illustration.html', isSubmenu: false },
+    { text: 'CREATIVE CODING', url: 'work/creative-coding.html', isSubmenu: false }
+  ]
+};
+
+export function spawnLetters(position, menuLevel = 'main') {
   if (!window.portfolioApp.font) {
     console.log('Font not loaded yet');
     return;
   }
 
-  const navItems = [
-    { text: 'ABOUT', url: '#about_me' },
-    { text: 'CONTACT', url: '#contact' },
-    { text: 'WORK', url: 'work.html' }
-  ];
+  const navItems = menuStructure[menuLevel] || menuStructure.main;
 
-  if (window.portfolioApp.currentWordIndex >= navItems.length) {
-    clearAllLetters();
-    window.portfolioApp.currentWordIndex = 0;
+  // Only clear and increment for main menu
+  if (menuLevel === 'main') {
+    if (window.portfolioApp.currentWordIndex >= navItems.length) {
+      clearAllLetters();
+      window.portfolioApp.currentWordIndex = 0;
+    }
+
+    const item = navItems[window.portfolioApp.currentWordIndex];
+    spawnWord(position, item, menuLevel, window.portfolioApp.currentWordIndex);
+    window.portfolioApp.currentWordIndex++;
+  } else {
+    // For submenu, spawn all items at once
+    navItems.forEach((item, index) => {
+      spawnWord(position, item, menuLevel, index);
+    });
   }
 
-  const item = navItems[window.portfolioApp.currentWordIndex];
+  console.log(`Spawned menu: ${menuLevel}`);
+}
+
+function spawnWord(position, item, menuLevel, index) {
   const word = item.text;
 
   for (let i = 0; i < word.length; i++) {
@@ -140,9 +165,19 @@ export function spawnLetters(position) {
     });
     textBody.addShape(textShape);
 
-    const spawnX = position.x + (i - word.length / 2) * 0.4;
+    // Space out multiple words when spawning submenu
+    let spawnX, spawnZ;
+    if (menuLevel === 'work') {
+      // Spread work items in a circle
+      const angle = (index / 3) * Math.PI * 2;
+      spawnX = position.x + Math.cos(angle) * 1.5;
+      spawnZ = position.z + Math.sin(angle) * 1.5;
+    } else {
+      spawnX = position.x + (i - word.length / 2) * 0.4;
+      spawnZ = position.z;
+    }
+
     const spawnY = 2;
-    const spawnZ = position.z;
 
     textMesh.position.set(spawnX, spawnY, spawnZ);
     textBody.position.set(spawnX, spawnY, spawnZ);
@@ -165,17 +200,16 @@ export function spawnLetters(position) {
       body: textBody,
       url: item.url,
       word: item.text,
-      wordId: `${item.text}_${window.portfolioApp.currentWordIndex}`,
+      wordId: `${item.text}_${menuLevel}_${index}`,
       letter: letter,
-      isClickable: true
+      isClickable: true,
+      menuLevel: menuLevel,
+      isSubmenu: item.isSubmenu
     };
 
     window.portfolioApp.scene.add(textMesh);
     window.portfolioApp.letters.push(textMesh);
   }
-
-  window.portfolioApp.currentWordIndex++;
-  console.log(`Spawned "${item.text}"`);
 }
 
 export function clearAllLetters() {

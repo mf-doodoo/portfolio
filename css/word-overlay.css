@@ -8,24 +8,77 @@
   color: #ffffff;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.5s ease;
-  z-index: 0;  
+  z-index: 0;
   font-family: 'Roboto', sans-serif;
 }
 
-/* When showing hovered word */
+/* When showing hovered word - slide in from left */
 #word-overlay.visible {
   opacity: 1 !important;
-  transition: opacity 0.5s ease;
-  z-index: 0;  
+  z-index: 0;
   font-size: 224px;
+  animation: slideInLeft 0.6s ease-out forwards;
 }
 
-/* When showing default message */
+/* Slide out when leaving */
+#word-overlay.sliding-out {
+  animation: slideOutLeft 0.4s ease-in forwards;
+}
+
+/* When showing default message - quick slide in from right */
 #word-overlay.default-message {
   opacity: 1 !important;
-  transition: opacity 0.5s ease;
-  z-index: 0;  
+  z-index: 0;
   font-size: 48px;
   font-family: 'Roboto', sans-serif;
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+/* Quick slide out for default message */
+#word-overlay.default-message.sliding-out {
+  animation: slideOutRight 0.2s ease-in forwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translate(calc(-50% - 100px), -50%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+  to {
+    transform: translate(calc(-50% - 100px), -50%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translate(calc(-50% + 100px), -50%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+  to {
+    transform: translate(calc(-50% + 100px), -50%);
+    opacity: 0;
+  }
 }
