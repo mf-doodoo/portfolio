@@ -45,38 +45,69 @@ function onMouseClick(event, raycaster, mouse, scene, camera) {
 
   const app = window.portfolioApp;
 
-  // Check letter clicks FIRST
+  // Check letter/object clicks FIRST
   const letterIntersects = raycaster.intersectObjects(app.letters);
   if (letterIntersects.length > 0) {
-    const clickedLetter = letterIntersects[0].object;
-    const word = clickedLetter.userData.word;
-    const menuLevel = clickedLetter.userData.menuLevel;
-    const isSubmenu = clickedLetter.userData.isSubmenu;
-    const url = clickedLetter.userData.url;
+    const clicked = letterIntersects[0].object;
+    const word = clicked.userData.word;
+    const menuLevel = clicked.userData.menuLevel;
+    const isSubmenu = clicked.userData.isSubmenu;
+    const isBack = clicked.userData.isBack;
+    const isPlaceholder = clicked.userData.isPlaceholder;
+    const url = clicked.userData.url;
     
-    console.log('Clicked letter:', word, 'isSubmenu:', isSubmenu, 'menuLevel:', menuLevel);
+    console.log('Clicked:', word, 'menuLevel:', menuLevel);
     
-    // If it's a submenu trigger (WORK from main menu)
-    if (isSubmenu && menuLevel === 'main') {
-      clearAllLetters();
-      // Spawn work submenu at center position
-      const centerPos = new THREE.Vector3(0, 0, 0);
-      spawnLetters(centerPos, 'work');
-    } else if (url) {
-      // Navigate to the page
+    // Handle BACK button
+    if (isBack) {
+      spawnLetters(new THREE.Vector3(0, 0, 0), 'main');
+      return;
+    }
+    
+    // Handle placeholder (ABOUT)
+    if (isPlaceholder) {
+      app.showOverlay('about-overlay');
+      return;
+    }
+    
+    // Handle submenu triggers
+    if (isSubmenu) {
+      const submenuMap = {
+        'ABOUT': 'about',
+        'CONTACT': 'contact',
+        'WORK': 'work'
+      };
+      const submenuLevel = submenuMap[word];
+      if (submenuLevel) {
+        spawnLetters(new THREE.Vector3(0, 0, 0), submenuLevel);
+      }
+      return;
+    }
+    
+    // Handle regular links
+    if (url) {
       if (url.startsWith('#')) {
         app.showOverlay(url.substring(1) + '-overlay');
+      } else if (url.startsWith('mailto:')) {
+        window.location.href = url;
+      } else if (url.startsWith('http')) {
+        window.open(url, '_blank');
       } else {
-        console.log('Navigating to:', url);
         window.location.href = url;
       }
+      // Show BACK menu after clicking contact item
+      if (menuLevel === 'contact') {
+        setTimeout(() => {
+          spawnLetters(new THREE.Vector3(0, 0, 0), 'back');
+        }, 300);
+      }
+      return;
     }
-    return;
   }
 
-  // Check plane click to spawn letters (only if not clicking letters)
+  // Check plane click to spawn letters
   const planeIntersects = raycaster.intersectObjects(scene.children);
-  if (planeIntersects.length > 0 && font) {
+  if (planeIntersects.length > 0 && window.portfolioApp.font) {
     for (let obj of planeIntersects) {
       if (obj.object.geometry instanceof THREE.PlaneGeometry) {
         spawnLetters(obj.point, 'main');

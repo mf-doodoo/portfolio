@@ -55,7 +55,6 @@
 .overlay-content h1 {
   font-size: 48px;
   margin-bottom: 30px;
-  text-shadow: 0 0 20px #ffffff;
 }
 
 .overlay-content h2 {
@@ -82,7 +81,8 @@
 }
 
 .overlay-content a:hover {
-  text-shadow: 0 0 10px #ffffff;
+  color: #ffcc00;
+  border-bottom-color: #ffcc00;
 }
 
 .close-btn {
@@ -103,7 +103,6 @@
 
 .close-btn:hover {
   transform: scale(1.2);
-  text-shadow: 0 0 20px #ffffff;
 }
 
 .contact-info {

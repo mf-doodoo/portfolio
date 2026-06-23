@@ -7,9 +7,9 @@ export function createOverlays() {
     <button class="close-btn">×</button>
     <div class="overlay-content">
       <h1>ABOUT ME</h1>
-      <p>Welcome to my portfolio! I'm a 3D artist, game dev and illustrator based in Lucerne, Switzerland, with a love for creating and designing digital experiences and art.</p>
-      <p>With a background in both art and programming, I specialize in 3D design, game development, and creative coding.
-      I enjoy pushing the boundaries of what's possible on the web and bringing my artistic visions to life through code.</p>
+      <p>Welcome to my portfolio! I'm a 3D artist, game dev, designer and illustrator based in Lucerne, Switzerland. I love creating and designing digital experiences and art.</p>
+      <p>With a background in both art and programming, I specialize in 3D design, game development/design, and creative coding.
+      I enjoy pushing the boundaries of what's possible and thinking outside the box, no matter the task.</p>
       <h2>SKILLSET</h2>
       <ul>
         <li>2D Art</li>

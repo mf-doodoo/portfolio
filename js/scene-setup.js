@@ -21,11 +21,10 @@ export function initScene(width, height) {
 
   // Plane geometry
   const planeGeometry = new THREE.PlaneGeometry(5, 5);
-  const planeMaterial = new THREE.MeshToonMaterial({ 
-    opacity: 0.1, 
-    transparent: true, 
+  const planeMaterial = new THREE.MeshStandardMaterial({ 
+    opacity: 1, 
     side: THREE.FrontSide,
-    wireframe: true,  // Shows only the edges
+    wireframe: false,  // Shows only the edges
    });
   const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
   planeMesh.rotation.x = -Math.PI / 2;

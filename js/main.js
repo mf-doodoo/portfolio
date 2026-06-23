@@ -28,6 +28,7 @@ window.portfolioApp = {
   letters: [],
   geometryObjects: [],
   currentWordIndex: 0,
+  currentMenuLevel: 'main',
   hoveredWord: null,
   font: null,
   isDragging: false,

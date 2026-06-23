@@ -31,7 +31,7 @@ function spawnRandomGeometry(position, config) {
   const randomGeometry = geometries[Math.floor(Math.random() * geometries.length)];
   const randomColor = Math.random() * 0xffffff;
 
-  const material = new THREE.MeshToonMaterial({
+  const material = new THREE.MeshStandardMaterial({
     color: randomColor,
     emissive: randomColor,
     emissiveIntensity: 0.2
@@ -87,14 +87,25 @@ function spawnRandomGeometry(position, config) {
 // Menu structure
 const menuStructure = {
   main: [
-    { text: 'ABOUT', url: '#about', isSubmenu: false },
-    { text: 'CONTACT', url: '#contact', isSubmenu: false },
+    { text: 'ABOUT', url: null, isSubmenu: true },
+    { text: 'CONTACT', url: null, isSubmenu: true },
     { text: 'WORK', url: null, isSubmenu: true }
+  ],
+  about: [
+    { text: 'PLACEHOLDER', url: '#about', isSubmenu: false, isPlaceholder: true }
+  ],
+  contact: [
+    { text: 'MAIL', url: 'mailto:your@email.com', isSubmenu: false },
+    { text: 'INSTAGRAM', url: 'https://instagram.com/yourprofile', isSubmenu: false },
+    { text: 'LINKEDIN', url: 'https://linkedin.com/in/yourprofile', isSubmenu: false }
   ],
   work: [
     { text: '3D ART', url: 'work/3d-art.html', isSubmenu: false },
     { text: 'ILLUSTRATION', url: 'work/illustration.html', isSubmenu: false },
     { text: 'CREATIVE CODING', url: 'work/creative-coding.html', isSubmenu: false }
+  ],
+  back: [
+    { text: 'BACK', url: null, isSubmenu: false, isBack: true }
   ]
 };
 
@@ -114,19 +125,27 @@ export function spawnLetters(position, menuLevel = 'main') {
     }
 
     const item = navItems[window.portfolioApp.currentWordIndex];
-    spawnWord(position, item, menuLevel, window.portfolioApp.currentWordIndex);
+    spawnWord(position, item, menuLevel, window.portfolioApp.currentWordIndex, navItems);  // Pass navItems here
     window.portfolioApp.currentWordIndex++;
   } else {
-    // For submenu, spawn all items at once
+    // For submenus, clear first then spawn all items
+    clearAllLetters();
     navItems.forEach((item, index) => {
-      spawnWord(position, item, menuLevel, index);
+      spawnWord(position, item, menuLevel, index, navItems);  // Pass navItems here
     });
   }
 
+  window.portfolioApp.currentMenuLevel = menuLevel;
   console.log(`Spawned menu: ${menuLevel}`);
 }
 
-function spawnWord(position, item, menuLevel, index) {
+function spawnWord(position, item, menuLevel, index, navItems) {  // Add navItems parameter
+  // Handle placeholder objects for ABOUT
+  if (item.isPlaceholder) {
+    spawnPlaceholder(position, item, menuLevel);
+    return;
+  }
+
   const word = item.text;
 
   for (let i = 0; i < word.length; i++) {
@@ -150,7 +169,7 @@ function spawnWord(position, item, menuLevel, index) {
 
     textGeometry.center();
 
-    const textMaterial = new THREE.MeshToonMaterial({
+    const textMaterial = new THREE.MeshStandardMaterial({
       color: 0x000000,
       emissive: 0xFF9CE8
     });
@@ -165,13 +184,16 @@ function spawnWord(position, item, menuLevel, index) {
     });
     textBody.addShape(textShape);
 
-    // Space out multiple words when spawning submenu
+    // Space out items based on menu type
     let spawnX, spawnZ;
-    if (menuLevel === 'work') {
-      // Spread work items in a circle
-      const angle = (index / 3) * Math.PI * 2;
+    if (menuLevel === 'work' || menuLevel === 'contact') {
+      // Spread items in a circle
+      const angle = (index / Math.max(navItems.length - 1, 1)) * Math.PI * 2;  // Now navItems is defined!
       spawnX = position.x + Math.cos(angle) * 1.5;
       spawnZ = position.z + Math.sin(angle) * 1.5;
+    } else if (menuLevel === 'back') {
+      spawnX = position.x + (i - word.length / 2) * 0.4;
+      spawnZ = position.z;
     } else {
       spawnX = position.x + (i - word.length / 2) * 0.4;
       spawnZ = position.z;
@@ -204,12 +226,65 @@ function spawnWord(position, item, menuLevel, index) {
       letter: letter,
       isClickable: true,
       menuLevel: menuLevel,
-      isSubmenu: item.isSubmenu
+      isSubmenu: item.isSubmenu,
+      isBack: item.isBack
     };
 
     window.portfolioApp.scene.add(textMesh);
     window.portfolioApp.letters.push(textMesh);
   }
+}
+
+function spawnPlaceholder(position, item, menuLevel) {
+  // Create a simple placeholder cube
+  const placeholderGeometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
+  const placeholderMaterial = new THREE.MeshStandardMaterial({
+    color: 0x00CCFF,
+    emissive: 0x0066FF,
+    emissiveIntensity: 0.5
+  });
+
+  const placeholderMesh = new THREE.Mesh(placeholderGeometry, placeholderMaterial);
+  placeholderMesh.position.copy(position);
+  placeholderMesh.position.y = 2;
+
+  // Add physics body
+  const placeholderShape = new CANNON.Box(new CANNON.Vec3(0.3, 0.3, 0.3));
+  const placeholderBody = new CANNON.Body({
+    mass: 1,
+    linearDamping: 0.3,
+    angularDamping: 0.3
+  });
+  placeholderBody.addShape(placeholderShape);
+  placeholderBody.position.copy(placeholderMesh.position);
+
+  placeholderBody.velocity.set(
+    (Math.random() - 0.5) * 1,
+    Math.random() * 3 + 2,
+    (Math.random() - 0.5) * 1
+  );
+
+  placeholderBody.angularVelocity.set(
+    (Math.random() - 0.5) * 2,
+    (Math.random() - 0.5) * 2,
+    (Math.random() - 0.5) * 2
+  );
+
+  window.portfolioApp.world.addBody(placeholderBody);
+
+  placeholderMesh.userData = {
+    body: placeholderBody,
+    url: item.url,
+    word: 'PLACEHOLDER',
+    wordId: `placeholder_${menuLevel}`,
+    isClickable: true,
+    menuLevel: menuLevel,
+    isPlaceholder: true,
+    isDraggable: false
+  };
+
+  window.portfolioApp.scene.add(placeholderMesh);
+  window.portfolioApp.letters.push(placeholderMesh);
 }
 
 export function clearAllLetters() {
@@ -219,8 +294,12 @@ export function clearAllLetters() {
     if (letter.userData.body) {
       window.portfolioApp.world.removeBody(letter.userData.body);
     }
-    letter.geometry.dispose();
-    letter.material.dispose();
+    if (letter.geometry) {
+      letter.geometry.dispose();
+    }
+    if (letter.material) {
+      letter.material.dispose();
+    }
   });
   window.portfolioApp.letters.length = 0;
 }
