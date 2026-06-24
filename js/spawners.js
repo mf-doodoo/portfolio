@@ -16,6 +16,7 @@ export function spawnInitialGeometry(config) {
   console.log(`Spawned ${numberOfObjects} geometry objects`);
 }
 
+// Function to spawn random geometry objects
 function spawnRandomGeometry(position, config) {
   const geometries = [
     new THREE.BoxGeometry(0.3, 0.3, 0.3),
@@ -109,6 +110,8 @@ const menuStructure = {
   ]
 };
 
+
+// Function to spawn letters based on the menu structure
 export function spawnLetters(position, menuLevel = 'main') {
   if (!window.portfolioApp.font) {
     console.log('Font not loaded yet');
@@ -171,7 +174,7 @@ function spawnWord(position, item, menuLevel, index, navItems) {  // Add navItem
 
     const textMaterial = new THREE.MeshStandardMaterial({
       color: 0x000000,
-      emissive: 0xFF9CE8
+      wireframe: false  // Enable wireframe for debugging
     });
 
     const textMesh = new THREE.Mesh(textGeometry, textMaterial);
@@ -183,6 +186,15 @@ function spawnWord(position, item, menuLevel, index, navItems) {  // Add navItem
       angularDamping: 0.3
     });
     textBody.addShape(textShape);
+
+    /*// ADD EDGES - Creates visible edge outlines
+    const edges = new THREE.EdgesGeometry(textGeometry, 30); // 30 is the threshold angle
+    const lineSegments = new THREE.LineSegments(
+      edges,
+      new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 2 })
+    );
+    textMesh.add(lineSegments); // Add edges as a child of the mesh
+    */
 
     // Space out items based on menu type
     let spawnX, spawnZ;

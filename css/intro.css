@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #27A9F5;
+  background-color: #ffffff;
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -22,7 +22,7 @@
 .intro-line {
   font-size: 64px;
   font-weight: bold;
-  color: #ffffff;
+  color: #000000;
   position: absolute;
   left: 50%;
   top: 50%;

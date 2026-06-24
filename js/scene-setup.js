@@ -55,7 +55,7 @@ export function initScene(width, height) {
   scene.add(directionalLight);
   camera.add(ambientLight);
 
-  // Axes helper (debugging)
+  // Axes helper (debugging); green = Y, red = X, blue = Z
   const axesHelper = new THREE.AxesHelper(5);
   scene.add(axesHelper);
 
