@@ -20,9 +20,10 @@ export function initScene(width, height) {
   const mouse = new THREE.Vector2();
 
   // Plane geometry
-  const planeGeometry = new THREE.PlaneGeometry(5, 5);
+  const planeGeometry = new THREE.PlaneGeometry(20, 20);
   const planeMaterial = new THREE.MeshStandardMaterial({ 
-    opacity: 1, 
+    opacity: 0, 
+    transparent: true,
     side: THREE.FrontSide,
     wireframe: false,  // Shows only the edges
    });

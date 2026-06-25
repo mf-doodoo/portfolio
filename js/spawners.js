@@ -96,9 +96,9 @@ const menuStructure = {
     { text: 'PLACEHOLDER', url: '#about', isSubmenu: false, isPlaceholder: true }
   ],
   contact: [
-    { text: 'MAIL', url: 'mailto:your@email.com', isSubmenu: false },
-    { text: 'INSTAGRAM', url: 'https://instagram.com/yourprofile', isSubmenu: false },
-    { text: 'LINKEDIN', url: 'https://linkedin.com/in/yourprofile', isSubmenu: false }
+    { text: 'MAIL', url: 'mailto:ardit.stojkaj@gmail.com', isSubmenu: false },
+    { text: 'INSTAGRAM', url: 'https://www.instagram.com/mf_doodoo/', isSubmenu: false },
+    { text: 'LINKEDIN', url: 'https://www.linkedin.com/in/ardit-stojkaj-05466b168/', isSubmenu: false }
   ],
   work: [
     { text: '3D ART', url: 'work/3d-art.html', isSubmenu: false },

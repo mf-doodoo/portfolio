@@ -18,12 +18,11 @@ createIntro();
 // Create overlays
 createOverlays();
 
-// Create background color panel
+// CREATE BACKGROUND COLOR PANEL - Add this BEFORE global app state
 const backgroundPanel = document.createElement('div');
 backgroundPanel.id = 'background-color-panel';
 document.body.appendChild(backgroundPanel);
 
-// Add CSS for the background panel
 const backgroundStyle = document.createElement('style');
 backgroundStyle.textContent = `
   #background-color-panel {
@@ -65,8 +64,6 @@ backgroundStyle.textContent = `
 `;
 document.head.appendChild(backgroundStyle);
 
-
-// Global app state
 window.portfolioApp = {
   scene,
   camera,
@@ -78,6 +75,7 @@ window.portfolioApp = {
   currentWordIndex: 0,
   currentMenuLevel: 'main',
   hoveredWord: null,
+  activeMenuColor: '#FFFFFF',  // Add this to track current menu color
   font: null,
   isDragging: false,
   draggedObject: null,
@@ -153,6 +151,15 @@ function closeOverlay(overlayId) {
   renderer.setAnimationLoop(animate);
 }
 
+function getRandomColor() {
+var letters = '0123456789ABCDEF';
+var color = '#';
+for (var i = 0; i < 6; i++) {
+color += letters[Math.floor(Math.random() * 16)];
+}
+return color;
+}
+
 function updateLetterGlow() {
   const overlayElement = document.getElementById('word-overlay');
   const backgroundPanel = document.getElementById('background-color-panel');
@@ -169,24 +176,24 @@ function updateLetterGlow() {
   app.letters.forEach(letter => {
     const shouldGlow = (app.hoveredWord !== null && letter.userData.wordId === app.hoveredWord);
     
-    if (shouldGlow) {
-      letter.material.emissive.setHex(0xFF3300);
+    if (shouldGlow) { // Highlight the letter
+      letter.material.emissive.setHex(getRandomColor());
       letter.material.emissiveIntensity = 1;
       letter.material.wireframe = true;
       
       const edges = letter.children[0];
       if (edges && edges.material) {
-        edges.material.color.setHex(0xFF3300);
+        edges.material.color.setHex(getRandomColor());
         edges.material.linewidth = 4;
       }
-    } else {
-      letter.material.emissive.setHex(0x00CEFF);
+    } else { // Reset to default color
+      letter.material.emissive.setHex(0x000000);
       letter.material.emissiveIntensity = 0.5;
       letter.material.wireframe = false;
       
       const edges = letter.children[0];
       if (edges && edges.material) {
-        edges.material.color.setHex(0xFFFFFF);
+        edges.material.color.setHex(0x000000);
         edges.material.linewidth = 2;
       }
     }
@@ -221,11 +228,11 @@ function updateLetterGlow() {
       
       setTimeout(() => {
         overlayElement.classList.remove('visible', 'sliding-out');
-        overlayElement.textContent = 'CLICK ON THE PLANE TO SPAWN MORE WORDS!';
+        overlayElement.textContent = 'EXPLORE...';
         overlayElement.classList.add('default-message');
       }, 400);
     } else {
-      overlayElement.textContent = 'CLICK ON THE PLANE TO SPAWN MORE WORDS!';
+      overlayElement.textContent = 'EXPLORE...';
       overlayElement.classList.add('default-message');
     }
   }
