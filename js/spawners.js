@@ -106,8 +106,8 @@ const menuStructure = {
     { text: 'CREATIVE CODING', url: 'work/creative-coding.html', isSubmenu: false }
   ],
   back: [
-    { text: 'BACK', url: null, isSubmenu: false, isBack: true }
-  ]
+  { text: 'HOME', url: null, isSubmenu: false, isHome: true }
+]
 };
 
 
@@ -239,7 +239,7 @@ function spawnWord(position, item, menuLevel, index, navItems) {  // Add navItem
       isClickable: true,
       menuLevel: menuLevel,
       isSubmenu: item.isSubmenu,
-      isBack: item.isBack
+      isHome: item.isHome
     };
 
     window.portfolioApp.scene.add(textMesh);
@@ -248,9 +248,9 @@ function spawnWord(position, item, menuLevel, index, navItems) {  // Add navItem
 }
 
 function spawnPlaceholder(position, item, menuLevel) {
-  // Create a simple placeholder cube
+  // Create a simple placeholder cube for HOME
   const placeholderGeometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
-  const placeholderMaterial = new THREE.MeshStandardMaterial({
+  const placeholderMaterial = new THREE.MeshToonMaterial({
     color: 0x00CCFF,
     emissive: 0x0066FF,
     emissiveIntensity: 0.5
@@ -259,6 +259,14 @@ function spawnPlaceholder(position, item, menuLevel) {
   const placeholderMesh = new THREE.Mesh(placeholderGeometry, placeholderMaterial);
   placeholderMesh.position.copy(position);
   placeholderMesh.position.y = 2;
+
+  // Add edges
+  const edges = new THREE.EdgesGeometry(placeholderGeometry, 30);
+  const lineSegments = new THREE.LineSegments(
+    edges,
+    new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 2 })
+  );
+  placeholderMesh.add(lineSegments);
 
   // Add physics body
   const placeholderShape = new CANNON.Box(new CANNON.Vec3(0.3, 0.3, 0.3));
@@ -287,11 +295,11 @@ function spawnPlaceholder(position, item, menuLevel) {
   placeholderMesh.userData = {
     body: placeholderBody,
     url: item.url,
-    word: 'PLACEHOLDER',
-    wordId: `placeholder_${menuLevel}`,
+    word: 'HOME',
+    wordId: `home_${menuLevel}`,
     isClickable: true,
     menuLevel: menuLevel,
-    isPlaceholder: true,
+    isHome: true,
     isDraggable: false
   };
 
