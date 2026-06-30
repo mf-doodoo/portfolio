@@ -18,70 +18,13 @@ createIntro();
 // Create overlays
 createOverlays();
 
-// CREATE BACKGROUND MENU SYSTEM
+// CREATE BACKGROUND COLOR PANEL - Add this BEFORE global app state
+const backgroundPanel = document.createElement('div');
+backgroundPanel.id = 'background-color-panel';
+document.body.appendChild(backgroundPanel);
+
 const backgroundStyle = document.createElement('style');
 backgroundStyle.textContent = `
-  #background-menu {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: -1;
-    text-align: center;
-    font-family: 'Roboto', sans-serif;
-    font-weight: bold;
-  }
-
-  .menu-item {
-    font-size: 48px;
-    color: rgba(0, 0, 0, 0.1);
-    transition: font-size 0.4s ease, color 0.4s ease, opacity 0.4s ease;
-    margin: 20px 0;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  .menu-item.hovered {
-    font-size: 64px;
-    color: rgba(0, 0, 0, 0.3);
-  }
-
-  .menu-item.active {
-    font-size: 80px;
-    color: rgba(0, 0, 0, 0.6);
-    font-weight: 900;
-  }
-
-  .menu-item.hidden {
-    animation: slideOutLeft 0.5s ease-out forwards;
-  }
-
-  @keyframes slideOutLeft {
-    from {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    to {
-      opacity: 0;
-      transform: translateX(-100px);
-    }
-  }
-
-  @keyframes slideInLeft {
-    from {
-      opacity: 0;
-      transform: translateX(-100px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
-  .menu-item.showing {
-    animation: slideInLeft 0.5s ease-out forwards;
-  }
-
   #background-color-panel {
     position: fixed;
     top: 0;
@@ -92,26 +35,34 @@ backgroundStyle.textContent = `
     background-color: #FFFFFF;
     transition: background-color 0.5s ease;
   }
+
+  #background-color-panel.sliding-in {
+    animation: bgSlideIn 0.6s ease-out forwards;
+  }
+
+  #background-color-panel.sliding-out {
+    animation: bgSlideOut 0.4s ease-in forwards;
+  }
+
+  @keyframes bgSlideIn {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes bgSlideOut {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
 `;
 document.head.appendChild(backgroundStyle);
-
-// Create background menu container
-const backgroundMenu = document.createElement('div');
-backgroundMenu.id = 'background-menu';
-const menuItems = ['ABOUT', 'CONTACT', 'WORK'];
-menuItems.forEach(item => {
-  const itemDiv = document.createElement('div');
-  itemDiv.className = 'menu-item';
-  itemDiv.textContent = item;
-  itemDiv.dataset.menu = item.toLowerCase();
-  backgroundMenu.appendChild(itemDiv);
-});
-document.body.appendChild(backgroundMenu);
-
-// Create background color panel
-const backgroundPanel = document.createElement('div');
-backgroundPanel.id = 'background-color-panel';
-document.body.appendChild(backgroundPanel);
 
 window.portfolioApp = {
   scene,
@@ -124,12 +75,11 @@ window.portfolioApp = {
   currentWordIndex: 0,
   currentMenuLevel: 'main',
   hoveredWord: null,
-  activeMenu: null,  // Track which menu is currently active
+  activeMenuColor: '#FFFFFF',  // Add this to track current menu color
   font: null,
   isDragging: false,
   draggedObject: null,
   updateLetterGlow,
-  updateBackgroundMenu,
   showOverlay,
   closeOverlay
 };
@@ -201,87 +151,89 @@ function closeOverlay(overlayId) {
   renderer.setAnimationLoop(animate);
 }
 
-// Color map for different menus
-const colorMap = {
-  'about': '#FFFF00',     // Yellow
-  'contact': '#0088FF',   // Blue
-  'work': '#FF0000'       // Red
-};
-
-function updateBackgroundMenu(hoveredMenu = null, activeMenu = null) {
-  const backgroundPanel = document.getElementById('background-color-panel');
-  const menuItems = document.querySelectorAll('.menu-item');
-  
-  menuItems.forEach(item => {
-    const menuName = item.dataset.menu;
-    
-    // If there's an active menu, hide other items
-    if (activeMenu) {
-      if (menuName === activeMenu) {
-        item.classList.remove('hidden');
-        item.classList.add('active');
-      } else {
-        item.classList.add('hidden');
-      }
-    } else {
-      // Show all items, highlight hovered one
-      item.classList.remove('hidden', 'active');
-      if (menuName === hoveredMenu) {
-        item.classList.add('hovered');
-      } else {
-        item.classList.remove('hovered');
-      }
-    }
-  });
-  
-  // Update background color
-  if (activeMenu) {
-    const bgColor = colorMap[activeMenu] || '#FFFFFF';
-    backgroundPanel.style.backgroundColor = bgColor;
-  } else {
-    backgroundPanel.style.backgroundColor = '#FFFFFF';
-  }
+function getRandomColor() {
+var letters = '0123456789ABCDEF';
+var color = '#';
+for (var i = 0; i < 6; i++) {
+color += letters[Math.floor(Math.random() * 16)];
+}
+return color;
 }
 
 function updateLetterGlow() {
+  const overlayElement = document.getElementById('word-overlay');
+  const backgroundPanel = document.getElementById('background-color-panel');
   const app = window.portfolioApp;
+  
+  // Color map for different menus
+  const colorMap = {
+    'main': '#FFFFFF',      // White
+    'about': '#FFFF00',     // Yellow
+    'contact': '#0088FF',   // Blue
+    'work': '#FF0000'       // Red
+  };
 
   app.letters.forEach(letter => {
     const shouldGlow = (app.hoveredWord !== null && letter.userData.wordId === app.hoveredWord);
-    const menuLevel = letter.userData.menuLevel;
     
-    if (shouldGlow) {
-      // Get color based on menu level
-      const glowColor = colorMap[menuLevel] || 0xFFFFFF;
-      letter.material.emissive.setHex(glowColor);
+    if (shouldGlow) { // Highlight the letter
+      letter.material.emissive.setHex(getRandomColor());
       letter.material.emissiveIntensity = 1;
       letter.material.wireframe = true;
       
       const edges = letter.children[0];
       if (edges && edges.material) {
-        edges.material.color.setHex(glowColor);
+        edges.material.color.setHex(getRandomColor());
         edges.material.linewidth = 4;
       }
-      
-      // Update background menu to show hovered item bigger
-      if (menuLevel !== 'main' && menuLevel !== 'back') {
-        updateBackgroundMenu(menuLevel, null);
-      }
-    } else {
+    } else { // Reset to default color
       letter.material.emissive.setHex(0x000000);
       letter.material.emissiveIntensity = 0.5;
       letter.material.wireframe = false;
       
       const edges = letter.children[0];
       if (edges && edges.material) {
-        edges.material.color.setHex(0xFFFFFF);
+        edges.material.color.setHex(0x000000);
         edges.material.linewidth = 2;
       }
     }
   });
 
-  // If not hovering, reset background menu
-  if (app.hoveredWord === null && !app.activeMenu) {
-    updateBackgroundMenu(null, null);
+  if (app.hoveredWord !== null) {
+    // Find which menu this letter belongs to
+    const firstLetter = app.letters.find(l => l.userData.wordId === app.hoveredWord);
+    if (firstLetter) {
+      const menuLevel = firstLetter.userData.menuLevel;
+      const newColor = colorMap[menuLevel] || colorMap['main'];
+      
+      // Change background color
+      backgroundPanel.style.backgroundColor = newColor;
+      backgroundPanel.classList.remove('sliding-out');
+      backgroundPanel.classList.add('sliding-in');
+      
+      // Show word
+      overlayElement.classList.remove('sliding-out', 'default-message');
+      overlayElement.textContent = firstLetter.userData.word;
+      overlayElement.classList.add('visible');
+    }
+  } else {
+    // Reset to white background
+    backgroundPanel.style.backgroundColor = '#FFFFFF';
+    backgroundPanel.classList.remove('sliding-in');
+    backgroundPanel.classList.add('sliding-out');
+    
+    // Show default message
+    if (overlayElement.classList.contains('visible')) {
+      overlayElement.classList.add('sliding-out');
+      
+      setTimeout(() => {
+        overlayElement.classList.remove('visible', 'sliding-out');
+        overlayElement.textContent = 'EXPLORE...';
+        overlayElement.classList.add('default-message');
+      }, 400);
+    } else {
+      overlayElement.textContent = 'EXPLORE...';
+      overlayElement.classList.add('default-message');
+    }
   }
 }

@@ -52,23 +52,25 @@ function onMouseClick(event, raycaster, mouse, scene, camera) {
     const word = clicked.userData.word;
     const menuLevel = clicked.userData.menuLevel;
     const isSubmenu = clicked.userData.isSubmenu;
-    const isHome = clicked.userData.isHome;
+    const isBack = clicked.userData.isBack;
     const isPlaceholder = clicked.userData.isPlaceholder;
     const url = clicked.userData.url;
     
     console.log('Clicked:', word, 'menuLevel:', menuLevel);
     
-// In the onMouseClick function, update the HOME button handler:
-
-    // Handle HOME button (return to main menu)
-    if (clicked.userData.isHome) {
+    // Handle BACK button
+    if (isBack) {
       spawnLetters(new THREE.Vector3(0, 0, 0), 'main');
-      app.activeMenu = null;
-      app.updateBackgroundMenu(null, null);
       return;
     }
     
-    // Handle submenu selection
+    // Handle placeholder (ABOUT)
+    if (isPlaceholder) {
+      app.showOverlay('about-overlay');
+      return;
+    }
+    
+    // Handle submenu triggers
     if (isSubmenu) {
       const submenuMap = {
         'ABOUT': 'about',
@@ -77,8 +79,6 @@ function onMouseClick(event, raycaster, mouse, scene, camera) {
       };
       const submenuLevel = submenuMap[word];
       if (submenuLevel) {
-        app.activeMenu = submenuLevel;  // Set active menu
-        app.updateBackgroundMenu(null, submenuLevel);  // Update background
         spawnLetters(new THREE.Vector3(0, 0, 0), submenuLevel);
       }
       return;

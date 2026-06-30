@@ -106,8 +106,8 @@ const menuStructure = {
     { text: 'CREATIVE CODING', url: 'work/creative-coding.html', isSubmenu: false }
   ],
   back: [
-  { text: 'HOME', url: null, isSubmenu: false, isHome: true }
-]
+    { text: 'BACK', url: null, isSubmenu: false, isBack: true }
+  ]
 };
 
 
@@ -239,7 +239,7 @@ function spawnWord(position, item, menuLevel, index, navItems) {  // Add navItem
       isClickable: true,
       menuLevel: menuLevel,
       isSubmenu: item.isSubmenu,
-      isHome: item.isHome
+      isBack: item.isBack
     };
 
     window.portfolioApp.scene.add(textMesh);
@@ -248,9 +248,9 @@ function spawnWord(position, item, menuLevel, index, navItems) {  // Add navItem
 }
 
 function spawnPlaceholder(position, item, menuLevel) {
-  // Create a simple placeholder cube for HOME
+  // Create a simple placeholder cube
   const placeholderGeometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
-  const placeholderMaterial = new THREE.MeshToonMaterial({
+  const placeholderMaterial = new THREE.MeshStandardMaterial({
     color: 0x00CCFF,
     emissive: 0x0066FF,
     emissiveIntensity: 0.5
@@ -259,14 +259,6 @@ function spawnPlaceholder(position, item, menuLevel) {
   const placeholderMesh = new THREE.Mesh(placeholderGeometry, placeholderMaterial);
   placeholderMesh.position.copy(position);
   placeholderMesh.position.y = 2;
-
-  // Add edges
-  const edges = new THREE.EdgesGeometry(placeholderGeometry, 30);
-  const lineSegments = new THREE.LineSegments(
-    edges,
-    new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 2 })
-  );
-  placeholderMesh.add(lineSegments);
 
   // Add physics body
   const placeholderShape = new CANNON.Box(new CANNON.Vec3(0.3, 0.3, 0.3));
@@ -295,11 +287,11 @@ function spawnPlaceholder(position, item, menuLevel) {
   placeholderMesh.userData = {
     body: placeholderBody,
     url: item.url,
-    word: 'HOME',
-    wordId: `home_${menuLevel}`,
+    word: 'PLACEHOLDER',
+    wordId: `placeholder_${menuLevel}`,
     isClickable: true,
     menuLevel: menuLevel,
-    isHome: true,
+    isPlaceholder: true,
     isDraggable: false
   };
 
