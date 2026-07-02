@@ -93,7 +93,7 @@ const menuStructure = {
     { text: 'WORK', url: null, isSubmenu: true }
   ],
   about: [
-    { text: 'PLACEHOLDER', url: '#about', isSubmenu: false, isPlaceholder: true }
+    { text: 'ABOUT ME', url: '#about', isSubmenu: false, isPlaceholder: true }
   ],
   contact: [
     { text: 'MAIL', url: 'mailto:ardit.stojkaj@gmail.com', isSubmenu: false },
@@ -287,7 +287,7 @@ function spawnPlaceholder(position, item, menuLevel) {
   placeholderMesh.userData = {
     body: placeholderBody,
     url: item.url,
-    word: 'PLACEHOLDER',
+    word: 'ABOUT',
     wordId: `placeholder_${menuLevel}`,
     isClickable: true,
     menuLevel: menuLevel,

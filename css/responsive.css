@@ -1,0 +1,94 @@
+/* Touch devices (phones, tablets) */
+@media (hover: none) and (pointer: coarse) {
+  /* Word overlay - smaller on touch devices */
+  #word-overlay {
+    font-size: 64px !important;
+    top: 30% !important;
+  }
+  
+  #word-overlay.visible {
+    font-size: 64px;
+  }
+  
+  /* Intro panel text - smaller */
+  .intro-line {
+    font-size: 48px;
+  }
+  
+  /* Overlay content - adjust padding */
+  .overlay-content {
+    padding: 20px;
+  }
+  
+  .overlay-content h1 {
+    font-size: 36px;
+  }
+  
+  .overlay-content h2 {
+    font-size: 28px;
+  }
+  
+  .overlay-content p {
+    font-size: 16px;
+  }
+  
+  /* Close button - larger on touch */
+  .close-btn {
+    font-size: 60px;
+    top: 20px;
+    right: 20px;
+  }
+  
+  /* Disable pointer cursor changes on touch */
+  body {
+    cursor: auto !important;
+  }
+}
+
+/* Non-touch devices (desktop with mouse) */
+@media (hover: hover) and (pointer: fine) {
+  /* Keep larger text on desktop */
+  #word-overlay {
+    font-size: 224px;
+    top: 20%;
+  }
+  
+  .intro-line {
+    font-size: 64px;
+  }
+  
+  /* Show cursor effects */
+  body {
+    cursor: default;
+  }
+}
+
+/* Very small screens (mobile phones) */
+@media (max-width: 480px) {
+  #word-overlay {
+    left: 50% !important;
+  }
+  
+  .intro-line {
+    font-size: 36px;
+  }
+  
+  .overlay-content h1 {
+    font-size: 28px;
+  }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
+  #word-overlay {
+    font-size: 120px;
+  }
+  
+  .intro-line {
+    font-size: 56px;
+  }
+  
+  .overlay-content h1 {
+    font-size: 40px;
+  }
+}

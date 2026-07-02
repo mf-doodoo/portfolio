@@ -6,6 +6,20 @@ import { spawnLetters, clearAllLetters } from './spawners.js';
 let font = null;
 let camera = null;
 
+// TOUCH DETECTION
+const isTouchDevice = () => {
+  return (('ontouchstart' in window) ||
+          (navigator.maxTouchPoints > 0) ||
+          (navigator.msMaxTouchPoints > 0));
+};
+
+const touchEnabled = isTouchDevice();
+console.log('Touch device detected:', touchEnabled);
+
+// Track touched letter for mobile
+let touchedLetter = null;
+
+
 const fontLoader = new FontLoader();
 fontLoader.load(
   'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json',
@@ -21,13 +35,31 @@ export function setupEventListeners(config) {
   
   camera = cam;
 
-  window.addEventListener('click', (event) => {
-    onMouseClick(event, raycaster, mouse, scene, camera);
-  });
+  // MOUSE EVENTS (for desktop)
+  if (!touchEnabled) {
+    window.addEventListener('click', (event) => {
+      onMouseClick(event, raycaster, mouse, scene, camera);
+    });
 
-  window.addEventListener('mousemove', (event) => {
-    onMouseMove(event, raycaster, mouse, controls, scene, camera);
-  });
+    window.addEventListener('mousemove', (event) => {
+      onMouseMove(event, raycaster, mouse, controls, scene, camera);
+    });
+  }
+
+  // TOUCH EVENTS (for mobile/tablet)
+  if (touchEnabled) {
+    window.addEventListener('touchstart', (event) => {
+      onTouchStart(event, raycaster, mouse, scene, camera);
+    });
+
+    window.addEventListener('touchmove', (event) => {
+      onTouchMove(event, raycaster, mouse, controls, scene, camera);
+    });
+
+    window.addEventListener('touchend', () => {
+      onTouchEnd();
+    });
+  }
 
   window.addEventListener('mousedown', (event) => {
     onMouseDown(event, raycaster, mouse, controls, camera);
@@ -38,6 +70,126 @@ export function setupEventListeners(config) {
   });
 }
 
+// TOUCH EVENT HANDLERS
+function onTouchStart(event, raycaster, mouse, scene, camera) {
+  const touch = event.touches[0];
+  mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  const app = window.portfolioApp;
+  const letterIntersects = raycaster.intersectObjects(app.letters);
+
+  if (letterIntersects.length > 0) {
+    touchedLetter = letterIntersects[0].object;
+    
+    // Show touch feedback
+    app.hoveredWord = touchedLetter.userData.wordId;
+    app.updateLetterGlow();
+  }
+}
+
+function onTouchMove(event, raycaster, mouse, controls, scene, camera) {
+  const touch = event.touches[0];
+  mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  const app = window.portfolioApp;
+  const letterIntersects = raycaster.intersectObjects(app.letters);
+
+  if (letterIntersects.length > 0) {
+    touchedLetter = letterIntersects[0].object;
+    app.hoveredWord = touchedLetter.userData.wordId;
+    app.updateLetterGlow();
+  } else {
+    touchedLetter = null;
+    app.hoveredWord = null;
+    app.updateLetterGlow();
+  }
+}
+
+function onTouchEnd() {
+  const app = window.portfolioApp;
+
+  // Execute click on touched letter
+  if (touchedLetter) {
+    const word = touchedLetter.userData.word;
+    const menuLevel = touchedLetter.userData.menuLevel;
+    const isSubmenu = touchedLetter.userData.isSubmenu;
+    const isBack = touchedLetter.userData.isBack;
+    const isPlaceholder = touchedLetter.userData.isPlaceholder;
+    const url = touchedLetter.userData.url;
+
+    // Handle BACK button
+    if (isBack) {
+      spawnLetters(new THREE.Vector3(0, 0, 0), 'main');
+      const backgroundPanel = document.getElementById('background-color-panel');
+      backgroundPanel.style.backgroundColor = '#FFFFFF';
+      backgroundPanel.classList.remove('sliding-out');
+      backgroundPanel.classList.add('sliding-in');
+      touchedLetter = null;
+      app.hoveredWord = null;
+      app.updateLetterGlow();
+      return;
+    }
+
+    // Handle placeholder
+    if (isPlaceholder) {
+      app.showOverlay('about-overlay');
+      touchedLetter = null;
+      app.hoveredWord = null;
+      app.updateLetterGlow();
+      return;
+    }
+
+    // Handle submenu triggers
+    if (isSubmenu) {
+      const submenuMap = {
+        'ABOUT': 'about',
+        'CONTACT': 'contact',
+        'WORK': 'work'
+      };
+      const submenuLevel = submenuMap[word];
+      if (submenuLevel) {
+        spawnLetters(new THREE.Vector3(0, 0, 0), submenuLevel);
+      }
+      touchedLetter = null;
+      app.hoveredWord = null;
+      app.updateLetterGlow();
+      return;
+    }
+
+    // Handle regular links
+    if (url) {
+      if (url.startsWith('#')) {
+        app.showOverlay(url.substring(1) + '-overlay');
+      } else if (url.startsWith('mailto:')) {
+        window.location.href = url;
+      } else if (url.startsWith('http')) {
+        window.open(url, '_blank');
+      } else {
+        window.location.href = url;
+      }
+      if (menuLevel === 'contact') {
+        setTimeout(() => {
+          spawnLetters(new THREE.Vector3(0, 0, 0), 'back');
+        }, 300);
+      }
+      touchedLetter = null;
+      app.hoveredWord = null;
+      app.updateLetterGlow();
+      return;
+    }
+  }
+
+  // Reset if no letter touched
+  touchedLetter = null;
+  app.hoveredWord = null;
+  app.updateLetterGlow();
+}
+
+// MOUSE EVENT HANDLERS
 function onMouseClick(event, raycaster, mouse, scene, camera) {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
