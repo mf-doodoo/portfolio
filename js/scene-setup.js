@@ -4,7 +4,7 @@ import * as CANNON from 'cannon-es';
 
 export function initScene(width, height) {
   // Camera
-  const camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
+  const camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 50);
   camera.position.set(0, 2, 3);
   camera.lookAt(0, 0, 0);
 

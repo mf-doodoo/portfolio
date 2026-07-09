@@ -21,15 +21,8 @@ html, body {
   }
 }
 
-/* Tablets and medium screens */
-@media (min-width: 481px) and (max-width: 1024px) {
-  body {
-    font-size: 16px;
-  }
-}
-
 /* Desktop and large screens */
-@media (min-width: 1025px) {
+@media (min-width: 481px) {
   body {
     font-size: 18px;
   }

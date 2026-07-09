@@ -187,46 +187,44 @@ function spawnWord(position, item, menuLevel, index, navItems) {  // Add navItem
     });
     textBody.addShape(textShape);
 
-    /*// ADD EDGES - Creates visible edge outlines
-    const edges = new THREE.EdgesGeometry(textGeometry, 30); // 30 is the threshold angle
-    const lineSegments = new THREE.LineSegments(
-      edges,
-      new THREE.LineBasicMaterial({ color: 0xFFFFFF, linewidth: 2 })
-    );
-    textMesh.add(lineSegments); // Add edges as a child of the mesh
-    */
-
-    // Space out items based on menu type
-    let spawnX, spawnZ;
-    if (menuLevel === 'work' || menuLevel === 'contact') {
-      // Spread items in a circle
-      const angle = (index / Math.max(navItems.length - 1, 1)) * Math.PI * 2;  // Now navItems is defined!
-      spawnX = position.x + Math.cos(angle) * 1.5;
-      spawnZ = position.z + Math.sin(angle) * 1.5;
-    } else if (menuLevel === 'back') {
-      spawnX = position.x + (i - word.length / 2) * 0.4;
-      spawnZ = position.z;
-    } else {
-      spawnX = position.x + (i - word.length / 2) * 0.4;
-      spawnZ = position.z;
-    }
-
+// Space out items based on menu type
+let spawnX, spawnZ;
+if (menuLevel === 'work' || menuLevel === 'contact') {
+  // Spread items in a tighter circle for submenus
+  const angle = (index / Math.max(navItems.length - 1, 1)) * Math.PI * 2;
+  spawnX = position.x + Math.cos(angle) * 0.6;  // Smaller radius
+  spawnZ = position.z + Math.sin(angle) * 0.6;  // Smaller radius
+} else if (menuLevel === 'back') {
+  spawnX = position.x + (i - word.length / 2) * 0.2;  // Reduced spacing
+  spawnZ = position.z;
+} else if (menuLevel === 'about') {
+  // About submenu (placeholder) - keep centered
+  spawnX = position.x;
+  spawnZ = position.z;
+} else {
+  // Main menu - default linear pattern
+  spawnX = position.x + (i - word.length / 2) * 0.4;
+  spawnZ = position.z;
+}
     const spawnY = 2;
 
     textMesh.position.set(spawnX, spawnY, spawnZ);
     textBody.position.set(spawnX, spawnY, spawnZ);
 
     textBody.velocity.set(
-      (Math.random() - 0.5) * 1,
-      Math.random() * 3 + 2,
-      (Math.random() - 0.5) * 1
+      (Math.random() - 0.5) * 0.5,    // X velocity: change " * 1" multiplier to control speed
+      Math.random() * 1,          // Y velocity
+      (Math.random() - 0.5) * 0.5     // Z velocity
     );
 
     textBody.angularVelocity.set(
-      (Math.random() - 0.5) * 2,
-      (Math.random() - 0.5) * 2,
-      (Math.random() - 0.5) * 2
+      (Math.random() - 0.5) * 2,    // X rotation: change " * 2" multiplier to control rotation speed
+      (Math.random() - 0.5) * 2,    // Y rotation
+      (Math.random() - 0.5) * 2     // Z rotation
     );
+      (Math.random() - 0.5) * 1,    // X rotation: change " * 2" multiplier to control rotation speed
+      (Math.random() - 0.5) * 1     // Y rotation
+    ;
 
     window.portfolioApp.world.addBody(textBody);
 

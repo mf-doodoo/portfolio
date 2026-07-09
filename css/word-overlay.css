@@ -95,22 +95,8 @@
   }
 }
 
-@media (min-width: 481px) and (max-width: 1024px) {
-  #word-overlay {
-    font-size: 160px;
-    top: 22%;
-  }
-  
-  #word-overlay.visible {
-    font-size: 160px;
-  }
-  
-  #word-overlay.default-message {
-    font-size: 40px;
-  }
-}
 
-@media (min-width: 1025px) {
+@media (min-width: 481px) {
   #word-overlay {
     font-size: 224px;
     top: 20%;
