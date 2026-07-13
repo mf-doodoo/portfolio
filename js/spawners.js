@@ -187,25 +187,26 @@ function spawnWord(position, item, menuLevel, index, navItems) {  // Add navItem
     });
     textBody.addShape(textShape);
 
-// Space out items based on menu type
-let spawnX, spawnZ;
-if (menuLevel === 'work' || menuLevel === 'contact') {
-  // Spread items in a tighter circle for submenus
-  const angle = (index / Math.max(navItems.length - 1, 1)) * Math.PI * 2;
-  spawnX = position.x + Math.cos(angle) * 0.6;  // Smaller radius
-  spawnZ = position.z + Math.sin(angle) * 0.6;  // Smaller radius
-} else if (menuLevel === 'back') {
-  spawnX = position.x + (i - word.length / 2) * 0.2;  // Reduced spacing
-  spawnZ = position.z;
-} else if (menuLevel === 'about') {
-  // About submenu (placeholder) - keep centered
-  spawnX = position.x;
-  spawnZ = position.z;
-} else {
-  // Main menu - default linear pattern
-  spawnX = position.x + (i - word.length / 2) * 0.4;
-  spawnZ = position.z;
-}
+
+  // Space out items based on menu type
+  let spawnX, spawnZ;
+  if (menuLevel === 'work' || menuLevel === 'contact') {
+    // Spread items in a tighter circle for submenus
+    const angle = (index / Math.max(navItems.length - 1, 1)) * Math.PI * 2;
+    spawnX = position.x + Math.cos(angle) * 0.6;  // Smaller radius
+    spawnZ = position.z + Math.sin(angle) * 0.6;  // Smaller radius
+  } else if (menuLevel === 'back') {
+    spawnX = position.x + (i - word.length / 2) * 0.2;  // Reduced spacing
+    spawnZ = position.z;
+  } else if (menuLevel === 'about') {
+    // About submenu (placeholder) - keep centered
+    spawnX = position.x;
+    spawnZ = position.z;
+  } else {
+    // Main menu - default linear pattern
+    spawnX = position.x + (i - word.length / 2) * 0.4;
+    spawnZ = position.z;
+  }
     const spawnY = 2;
 
     textMesh.position.set(spawnX, spawnY, spawnZ);
@@ -213,7 +214,7 @@ if (menuLevel === 'work' || menuLevel === 'contact') {
 
     textBody.velocity.set(
       (Math.random() - 0.5) * 0.5,    // X velocity: change " * 1" multiplier to control speed
-      Math.random() * 1,          // Y velocity
+      Math.random() * 1,              // Y velocity
       (Math.random() - 0.5) * 0.5     // Z velocity
     );
 
