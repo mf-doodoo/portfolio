@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work - Ardit Stojkaj</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background-color: #000;
+      color: #fff;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      padding: 20px 40px;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      padding: 10px 20px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 2px solid #fff;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 30px;
+    }
+
+    .project-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      cursor: pointer;
+      aspect-ratio: 1;
+      background: #1a1a1a;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .project-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .project-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .project-card:hover .project-image {
+      transform: scale(1.1);
+    }
+
+    .project-overlay-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .project-card:hover .project-overlay-info {
+      transform: translateY(0);
+    }
+
+    .project-overlay-info h3 {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .project-overlay-info p {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    /* MODAL STYLES */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #1a1a1a;
+      border-radius: 10px;
+      max-width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 40px;
+      position: relative;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 32px;
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      display: flex;
+      gap: 40px;
+      margin-top: 20px;
+    }
+
+    .modal-body .gallery-container {
+      flex: 1.5;
+    }
+
+    .modal-body .project-info {
+      flex: 1;
+    }
+
+
+    .gallery-container {
+      flex: 1;
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: #111;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .gallery-wrapper {
+      display: flex;
+      height: 100%;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-item {
+      min-width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a1a1a;
+    }
+
+    .gallery-item img,
+    .gallery-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gallery-nav {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .embed-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding-bottom: 0;
+    }
+
+    .embed-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+
+    .gallery-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .gallery-dot.active {
+      background-color: #fff;
+      transform: scale(1.3);
+    }
+
+    .gallery-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      z-index: 5;
+    }
+
+    .gallery-arrow:hover {
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .gallery-arrow.prev {
+      left: 20px;
+    }
+
+    .gallery-arrow.next {
+      right: 20px;
+    }
+
+    .project-info {
+      flex: 1;
+    }
+
+    .project-info h2 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    .project-info p {
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+
+    .project-tags {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .tag {
+      padding: 8px 16px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 1024px) {
+      .modal-body {
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .projects-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      .projects-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+      }
+
+      .modal-content {
+        max-width: 95%;
+        padding: 20px;
+      }
+
+      .project-info h2 {
+        font-size: 24px;
+      }
+
+      .project-info p {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Work</h1>
+    <a href="..\index.html" class="back-btn">← Back to Home</a>
+  </div>
+
+  <div class="container">
+    <div class="projects-grid" id="projectsGrid">
+      <!-- Projects will be generated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- PROJECT MODAL -->
+  <div class="modal" id="projectModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      
+      <div class="modal-body">
+        <div class="gallery-container">
+          <div class="gallery-wrapper" id="modalGallery">
+            <!-- Gallery items will be inserted here -->
+          </div>
+          <button class="gallery-arrow prev" id="prevBtn" onclick="prevSlide()">❮</button>
+          <button class="gallery-arrow next" id="nextBtn" onclick="nextSlide()">❯</button>
+          <div class="gallery-nav" id="modalNav">
+            <!-- Dots will be inserted here -->
+          </div>
+        </div>
+
+        <div class="project-info">
+          <h2 id="modalTitle"></h2>
+          <p id="modalDescription"></p>
+          <div class="project-tags" id="modalTags"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Project data -> to add more projects - add more objects to the projects array
+    const projects = [
+      {
+        id: 1,
+        title: "Aferdita",
+        category: "3D Character",
+        description: "Aferdita is a 3D character that I modelled after my own concept art. The whole process was done in Blender; from modelling, texturing, rigging and rendering. My goal was to create a stylized character from scratch in order to experience the full 3D pipeline. Aferdita was made ready to be animated and implemented in a game engine.",
+        thumbnail: "..\\pictures\\comgx.png",
+        gallery: [
+          "https://via.placeholder.com/1200x750?text=Project+1+-+Image+1",
+          "https://via.placeholder.com/1200x750?text=Project+1+-+Image+2",
+          "https://via.placeholder.com/1200x750?text=Project+1+-+Image+3"
+        ],
+        tags: ["3D", "Blender", "Character Design"]
+      },
+      {
+        id: 2,
+        title: "Astral Mage - Fourcast",
+        category: "3D Character",
+        description: "Another impressive project description. Talk about your creative process, the tools you used, and what makes this project special.",
+        thumbnail: "..\\pictures\\comgx.png",
+        gallery: [
+          "https://via.placeholder.com/1200x750?text=Project+2+-+Image+1",
+          "https://via.placeholder.com/1200x750?text=Project+2+-+Image+2",
+          "https://via.placeholder.com/1200x750?text=Project+2+-+Image+3",
+          "https://via.placeholder.com/1200x750?text=Project+2+-+Image+4"
+        ],
+        tags: ["3D", "Blender", "Character Design"]
+      },
+      {
+        id: 3,
+        title: "Unnamed Robot - Project Babel",
+        category: "3D Character",
+        description: "Describe your third project here. Include any relevant details about the client, the brief, your approach, and the final deliverables.",
+        thumbnail: "..\\pictures\\comgx.png",
+        gallery: [
+          "https://via.placeholder.com/1200x750?text=Project+3+-+Image+1",
+          "https://via.placeholder.com/1200x750?text=Project+3+-+Image+2"
+        ],
+        tags: ["3D", "Blender", "Character Design"]
+      },
+      {
+        id: 4,
+        title: "PleasurePal 3000",
+        category: "3D & Video Editing",
+        description: "Together with my colleague Sebastian Borter, I worked on creating a fake 3D advertisement for the «PleasurePal 3000», inspired by the Fallout series. Sebastian used Blender for the 3D modeling and animation of the PleasurePal, whereas I created the last scene in Blender and edited the video in Premiere Pro and After Effects.",
+        thumbnail: "..\\pictures\\PleasurePal.png",
+        gallery: [
+          { type: "embed", src: "https://player.vimeo.com/video/1216216312?badge=0&autopause=0&player_id=0&app_id=58479" },
+          { type: "image", src: "..\\pictures\\Skeleton.png" },
+          { type: "image", src: "..\\pictures\\Cityscape.png" }
+        ],
+        tags: ["3D", "Blender", "VFX"]
+      },
+      {
+        id: 5,
+        title: "Project 5",
+        category: "Illustration",
+        description: "Project 5 details here. Explain your process and the creative decisions you made.",
+        thumbnail: "..\\pictures\\comgx.png",
+        gallery: [
+          "https://via.placeholder.com/1200x750?text=Project+5+-+Image+1",
+          "https://via.placeholder.com/1200x750?text=Project+5+-+Image+2",
+          "https://via.placeholder.com/1200x750?text=Project+5+-+Image+3"
+        ],
+        tags: ["Concept Art", "Design"]
+      },
+      {
+        id: 6,
+        title: "Project 6",
+        category: "Creative Coding",
+        description: "Final project description. Showcase what makes this work unique and valuable.",
+        thumbnail: "..\\pictures\\comgx.png",
+        gallery: [
+          "https://via.placeholder.com/1200x750?text=Project+6+-+Image+1",
+          "https://via.placeholder.com/1200x750?text=Project+6+-+Image+2"
+        ],
+        tags: ["Web Development", "React", "Design"]
+      }
+    ];
+
+    let currentProject = null;
+    let currentGalleryIndex = 0;
+
+    // Generate grid
+    function generateGrid() {
+      const grid = document.getElementById('projectsGrid');
+      grid.innerHTML = projects.map(project => `
+        <div class="project-card" onclick="openProject(${project.id})">
+          <img src="${project.thumbnail}" alt="${project.title}" class="project-image">
+          <div class="project-overlay-info">
+            <h3>${project.title}</h3>
+            <p>${project.category}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Open project modal
+    function openProject(projectId) {
+      currentProject = projects.find(p => p.id === projectId);
+      currentGalleryIndex = 0;
+
+      if (!currentProject) return;
+
+      document.getElementById('modalTitle').textContent = currentProject.title;
+      document.getElementById('modalDescription').textContent = currentProject.description;
+      
+      // Generate tags
+      document.getElementById('modalTags').innerHTML = currentProject.tags
+        .map(tag => `<div class="tag">${tag}</div>`)
+        .join('');
+
+      // Generate gallery
+      const gallery = document.getElementById('modalGallery');
+      gallery.innerHTML = currentProject.gallery
+        .map(item => {
+          if (item.type === 'image') {
+            return `<div class="gallery-item"><img src="${item.src}" alt="Gallery image"></div>`;
+          } else if (item.type === 'video') {
+            return `<div class="gallery-item"><video controls><source src="${item.src}" type="video/mp4"></video></div>`;
+          } else if (item.type === 'embed') {
+            return `<div class="gallery-item"><div class="embed-wrapper"><iframe src="${item.src}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin"></iframe></div></div>`;
+          }
+        })
+        .join('');
+
+      // Generate dots
+      const nav = document.getElementById('modalNav');
+      nav.innerHTML = currentProject.gallery
+        .map((_, i) => `<div class="gallery-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${i})"></div>`)
+        .join('');
+
+      updateGallery();
+      document.getElementById('projectModal').classList.add('active');
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('projectModal').classList.remove('active');
+      currentProject = null;
+    }
+
+    // Gallery navigation
+    function nextSlide() {
+      if (!currentProject) return;
+      currentGalleryIndex = (currentGalleryIndex + 1) % currentProject.gallery.length;
+      updateGallery();
+    }
+
+    function prevSlide() {
+      if (!currentProject) return;
+      currentGalleryIndex = (currentGalleryIndex - 1 + currentProject.gallery.length) % currentProject.gallery.length;
+      updateGallery();
+    }
+
+    function goToSlide(index) {
+      currentGalleryIndex = index;
+      updateGallery();
+    }
+
+    function updateGallery() {
+      const wrapper = document.getElementById('modalGallery');
+      wrapper.style.transform = `translateX(${-currentGalleryIndex * 100}%)`;
+
+      const dots = document.querySelectorAll('#modalNav .gallery-dot');
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentGalleryIndex);
+      });
+    }
+
+    // Touch/swipe support
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => {
+      if (e.target.closest('.gallery-container')) {
+        touchStartX = e.touches[0].clientX;
+      }
+    });
+
+    document.addEventListener('touchend', (e) => {
+      if (e.target.closest('.gallery-container')) {
+        const touchEndX = e.changedTouches[0].clientX;
+        const diff = touchStartX - touchEndX;
+
+        if (diff > 50) nextSlide();
+        else if (diff < -50) prevSlide();
+      }
+    });
+
+    // Close modal on background click
+    document.getElementById('projectModal').addEventListener('click', (e) => {
+      if (e.target.id === 'projectModal') closeModal();
+    });
+
+    // Initialize
+    window.addEventListener('load', generateGrid);
+  </script>
+</body>
+</html>
