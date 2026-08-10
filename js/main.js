@@ -4,6 +4,7 @@ import { setupEventListeners } from './interactions.js';
 import { createIntro } from './intro.js';
 import { createOverlays } from './overlays.js';
 import { spawnInitialGeometry } from './spawners.js';
+import { createNavUI } from './ui-nav.js';
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -17,6 +18,7 @@ createIntro();
 
 // Create overlays
 createOverlays();
+createNavUI();
 
 // CREATE BACKGROUND COLOR PANEL - Add this BEFORE global app state
 const backgroundPanel = document.createElement('div');
@@ -58,7 +60,7 @@ backgroundStyle.textContent = `
       transform: translateX(0);
     }
     to {
-      transform: translateX(100%);
+      transform: translateX(-100%);
     }
   }
 `;
@@ -167,10 +169,9 @@ function updateLetterGlow() {
   
   // Color map for different menus
   const colorMap = {
-    'main': '#FFFFFF',      // White
-    'about': '#FFFF00',     // Yellow
-    'contact': '#0088FF',   // Blue
-    'work': '#FF0000'       // Red
+    'ABOUT': '#FFFF00',     // Yellow
+    'CONTACT': '#0088FF',   // Blue
+    'WORK': '#FF0000'       // Red
   };
 
   app.letters.forEach(letter => {
@@ -200,18 +201,14 @@ function updateLetterGlow() {
   });
 
   if (app.hoveredWord !== null) {
-    // Find which menu this letter belongs to
     const firstLetter = app.letters.find(l => l.userData.wordId === app.hoveredWord);
     if (firstLetter) {
-      const menuLevel = firstLetter.userData.menuLevel;
-      const newColor = colorMap[menuLevel] || colorMap['main'];
-      
-      // Change background color
+      const newColor = colorMap[firstLetter.userData.word] || '#FFFFFF';
+
       backgroundPanel.style.backgroundColor = newColor;
       backgroundPanel.classList.remove('sliding-out');
       backgroundPanel.classList.add('sliding-in');
-      
-      // Show word
+
       overlayElement.classList.remove('sliding-out', 'default-message');
       overlayElement.textContent = firstLetter.userData.word;
       overlayElement.classList.add('visible');

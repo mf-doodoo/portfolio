@@ -148,7 +148,6 @@ function onTouchEnd() {
       const submenuMap = {
         'ABOUT': 'about',
         'CONTACT': 'contact',
-        'WORK': 'work'
       };
       const submenuLevel = submenuMap[word];
       if (submenuLevel) {
@@ -227,7 +226,6 @@ function onMouseClick(event, raycaster, mouse, scene, camera) {
       const submenuMap = {
         'ABOUT': 'about',
         'CONTACT': 'contact',
-        'WORK': 'work'
       };
       const submenuLevel = submenuMap[word];
       if (submenuLevel) {

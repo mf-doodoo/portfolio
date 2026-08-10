@@ -21,9 +21,16 @@ html, body {
   }
 }
 
-/* Desktop and large screens */
-@media (min-width: 481px) {
+/* Tablet and large screens */
+@media (min-width: 481px) and (max-width: 1023px) {
   body {
     font-size: 18px;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1024px) {
+  body {
+    font-size: 20px;
   }
 }

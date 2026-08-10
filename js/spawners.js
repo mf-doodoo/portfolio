@@ -86,11 +86,11 @@ function spawnRandomGeometry(position, config) {
 }
 
 // Menu structure
-const menuStructure = {
+export const menuStructure = {
   main: [
     { text: 'ABOUT', url: null, isSubmenu: true },
     { text: 'CONTACT', url: null, isSubmenu: true },
-    { text: 'WORK', url: null, isSubmenu: true }
+    { text: 'WORK', url: 'work/work.html', isSubmenu: false }
   ],
   about: [
     { text: 'ABOUT ME', url: '#about', isSubmenu: false, isPlaceholder: true }
@@ -98,12 +98,9 @@ const menuStructure = {
   contact: [
     { text: 'MAIL', url: 'mailto:ardit.stojkaj@gmail.com', isSubmenu: false },
     { text: 'INSTAGRAM', url: 'https://www.instagram.com/mf_doodoo/', isSubmenu: false },
-    { text: 'LINKEDIN', url: 'https://www.linkedin.com/in/ardit-stojkaj-05466b168/', isSubmenu: false }
-  ],
-  work: [
-    { text: '3D ART', url: 'work/3d-art.html', isSubmenu: false },
-    { text: 'ILLUSTRATION', url: 'work/illustration.html', isSubmenu: false },
-    { text: 'CREATIVE CODING', url: 'work/creative-coding.html', isSubmenu: false }
+    { text: 'LINKEDIN', url: 'https://www.linkedin.com/in/ardit-stojkaj-05466b168/', isSubmenu: false },
+    { text: 'GITHUB', url: 'https://github.com/mf-doodoo', isSubmenu: false },
+    { text: 'ARTSTATION', url: 'https://mf_doodoo.artstation.com/', isSubmenu: false }
   ],
   back: [
     { text: 'BACK', url: null, isSubmenu: false, isBack: true }

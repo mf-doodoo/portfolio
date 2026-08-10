@@ -13,7 +13,7 @@ export function initScene(width, height) {
 
   // Scene
   const scene = new THREE.Scene();
-  scene.background = null;
+  scene.background = null;  // has to stay null so background text can be seen!
 
   // Raycaster
   const raycaster = new THREE.Raycaster();

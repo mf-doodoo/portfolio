@@ -3,7 +3,7 @@
   top: 0%;
   left: 40%;
   transform: translate(-50%, -50%);
-  font-size: 224px;
+  font-size: 112px;
   font-weight: bold;
   color: #000000;
   pointer-events: none;
@@ -82,31 +82,31 @@
 /* RESPONSIVE TEXT OVERLAY */
 @media (max-width: 480px) {
   #word-overlay {
-    font-size: 96px;
+    font-size: 112px;
     top: 25%;
   }
   
   #word-overlay.visible {
-    font-size: 96px;
+    font-size: 112px;
   }
   
   #word-overlay.default-message {
-    font-size: 28px;
+    font-size: 112px;
   }
 }
 
 
 @media (min-width: 481px) {
   #word-overlay {
-    font-size: 224px;
+    font-size: 112px;
     top: 20%;
   }
   
   #word-overlay.visible {
-    font-size: 224px;
+    font-size: 112px;
   }
   
   #word-overlay.default-message {
-    font-size: 48px;
+    font-size: 112px;
   }
 }
