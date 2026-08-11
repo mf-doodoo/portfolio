@@ -81,6 +81,8 @@ window.portfolioApp = {
   font: null,
   isDragging: false,
   draggedObject: null,
+  isOverlayOpen: false,
+  isNavOpen: false,
   updateLetterGlow,
   showOverlay,
   closeOverlay
@@ -136,6 +138,9 @@ function showOverlay(overlayId) {
   overlay.classList.remove('closing');
   overlay.classList.add('visible');
   renderer.setAnimationLoop(null);
+
+  window.portfolioApp.isOverlayOpen = true;
+
   
   const closeBtn = overlay.querySelector('.close-btn');
   closeBtn.onclick = () => closeOverlay(overlayId);
@@ -146,6 +151,8 @@ function closeOverlay(overlayId) {
   overlay.classList.remove('visible');
   overlay.classList.add('closing');
   
+  window.portfolioApp.isOverlayOpen = false;
+
   setTimeout(() => {
     overlay.classList.remove('closing');
   }, 800);

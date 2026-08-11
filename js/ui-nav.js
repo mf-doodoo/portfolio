@@ -7,6 +7,11 @@ export function createNavUI() {
   nameTag.textContent = 'ARDIT STOJKAJ';
   document.body.appendChild(nameTag);
 
+  // ---- Backdrop ----
+  const navBackdrop = document.createElement('div');
+  navBackdrop.id = 'nav-backdrop';
+  document.body.appendChild(navBackdrop);
+
   // ---- Hamburger button ----
   const menuBtn = document.createElement('button');
   menuBtn.id = 'menu-toggle';
@@ -39,8 +44,8 @@ export function createNavUI() {
   style.textContent = `
     #name-tag {
       position: fixed;
-      bottom: 20px;
-      right: 24px;
+      bottom: 5%;
+      right: 10%;
       font-family: sans-serif;
       font-size: 13px;
       letter-spacing: 1px;
@@ -54,9 +59,28 @@ export function createNavUI() {
       transform: translateX(150%);
     }
 
+    #nav-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 80;
+    }
+    #nav-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     #menu-toggle {
       position: fixed;
-      bottom: 24px;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
       width: 40px;
       height: 40px;
       background: black;
@@ -137,13 +161,30 @@ export function createNavUI() {
 
   // ---- Toggle open/close (name tag chained here) ----
   menuBtn.addEventListener('click', () => {
+    event.stopPropagation();
+
     const isOpen = menuBtn.classList.toggle('open');
     navPanel.classList.toggle('open', isOpen);
     nameTag.classList.toggle('nav-open', isOpen);
+    navBackdrop.classList.toggle('open', isOpen);
+    window.portfolioApp.isNavOpen = isOpen;
+  });
+
+// ---- Close nav when backdrop is clicked ----
+  navBackdrop.addEventListener('click', (event) => {
+    event.stopPropagation();   // <-- add this
+
+    menuBtn.classList.remove('open');
+    navPanel.classList.remove('open');
+    nameTag.classList.remove('nav-open');
+    navBackdrop.classList.remove('open');
+    window.portfolioApp.isNavOpen = false;
   });
 
   // ---- Handle clicks via stored action closures ----
   navList.addEventListener('click', (e) => {
+    e.stopPropagation();
+
     const li = e.target.closest('li[data-index]');
     if (!li) return;
 
@@ -153,6 +194,8 @@ export function createNavUI() {
     menuBtn.classList.remove('open');
     navPanel.classList.remove('open');
     nameTag.classList.remove('nav-open');
+    navBackdrop.classList.remove('open');
+    window.portfolioApp.isNavOpen = false;
   });
 }
 

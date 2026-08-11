@@ -90,6 +90,8 @@ function onTouchStart(event, raycaster, mouse, scene, camera) {
 }
 
 function onTouchMove(event, raycaster, mouse, controls, scene, camera) {
+  if (window.portfolioApp.isOverlayOpen) return;
+
   const touch = event.touches[0];
   mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
@@ -110,6 +112,8 @@ function onTouchMove(event, raycaster, mouse, controls, scene, camera) {
 }
 
 function onTouchEnd() {
+  if (window.portfolioApp.isOverlayOpen) return;
+
   const app = window.portfolioApp;
 
   // Execute click on touched letter
@@ -190,6 +194,8 @@ function onTouchEnd() {
 
 // MOUSE EVENT HANDLERS
 function onMouseClick(event, raycaster, mouse, scene, camera) {
+  if (window.portfolioApp.isOverlayOpen || window.portfolioApp.isNavOpen) return;
+
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
@@ -268,6 +274,8 @@ function onMouseClick(event, raycaster, mouse, scene, camera) {
 }
 
 function onMouseMove(event, raycaster, mouse, controls, scene, camera) {
+  if (window.portfolioApp.isOverlayOpen || window.portfolioApp.isNavOpen) return;
+
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
@@ -320,6 +328,8 @@ function onMouseMove(event, raycaster, mouse, controls, scene, camera) {
 }
 
 function onMouseDown(event, raycaster, mouse, controls, camera) {
+  if (window.portfolioApp.isOverlayOpen || window.portfolioApp.isNavOpen) return;
+
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
