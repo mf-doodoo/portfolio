@@ -48,18 +48,18 @@
 
 @keyframes slideOutLeft {
   from {
-    transform: translate(-50%, -50%);
-    opacity: 1;
-  }
-  to {
     transform: translate(calc(-50% - 100px), -50%);
     opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
   }
 }
 
 @keyframes slideInRight {
   from {
-    transform: translate(calc(-50% + 100px), -50%);
+    transform: translate(calc(-50% - 100px), -50%);
     opacity: 0;
   }
   to {
@@ -74,7 +74,7 @@
     opacity: 1;
   }
   to {
-    transform: translate(calc(-50% + 100px), -50%);
+    transform: translate(calc(-50% - 100px), -50%);
     opacity: 0;
   }
 }

@@ -114,7 +114,8 @@ function animate(time) {
   window.portfolioApp.letters.forEach(letter => {
     if (letter.userData.body) {
       letter.position.copy(letter.userData.body.position);
-      letter.quaternion.copy(letter.userData.body.quaternion);
+      letter.quaternion.copy(letter.userData.body.quaternion);  // Commented out to keep letters upright
+      //billboardToCamera(letter, camera);  // Make letters face the camera
     }
   });
 
@@ -185,13 +186,13 @@ function updateLetterGlow() {
     const shouldGlow = (app.hoveredWord !== null && letter.userData.wordId === app.hoveredWord);
     
     if (shouldGlow) { // Highlight the letter
-      letter.material.emissive.setHex(getRandomColor());
+      letter.material.emissive.setHex(0xFFFFFF);
       letter.material.emissiveIntensity = 1;
       letter.material.wireframe = true;
       
       const edges = letter.children[0];
       if (edges && edges.material) {
-        edges.material.color.setHex(getRandomColor());
+        edges.material.color.setHex(0xFFFFFF);
         edges.material.linewidth = 4;
       }
     } else { // Reset to default color
@@ -232,11 +233,11 @@ function updateLetterGlow() {
       
       setTimeout(() => {
         overlayElement.classList.remove('visible', 'sliding-out');
-        overlayElement.textContent = 'EXPLORE...';
+        overlayElement.textContent = 'EXPLORE';
         overlayElement.classList.add('default-message');
       }, 400);
     } else {
-      overlayElement.textContent = 'EXPLORE...';
+      overlayElement.textContent = 'EXPLORE';
       overlayElement.classList.add('default-message');
     }
   }

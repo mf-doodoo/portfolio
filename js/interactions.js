@@ -19,6 +19,10 @@ console.log('Touch device detected:', touchEnabled);
 // Track touched letter for mobile
 let touchedLetter = null;
 
+// DRAG DETECTION (to distinguish camera orbit from actual clicks)
+let mouseDownPos = { x: 0, y: 0 };
+const CLICK_DRAG_THRESHOLD = 6; // pixels
+
 
 const fontLoader = new FontLoader();
 fontLoader.load(
@@ -62,6 +66,7 @@ export function setupEventListeners(config) {
   }
 
   window.addEventListener('mousedown', (event) => {
+    mouseDownPos = { x: event.clientX, y: event.clientY };
     onMouseDown(event, raycaster, mouse, controls, camera);
   });
 
@@ -195,6 +200,12 @@ function onTouchEnd() {
 // MOUSE EVENT HANDLERS
 function onMouseClick(event, raycaster, mouse, scene, camera) {
   if (window.portfolioApp.isOverlayOpen || window.portfolioApp.isNavOpen) return;
+
+  // Ignore this click if it was actually a camera drag (orbit/pan)
+  const dx = event.clientX - mouseDownPos.x;
+  const dy = event.clientY - mouseDownPos.y;
+  const dragDistance = Math.sqrt(dx * dx + dy * dy);
+  if (dragDistance > CLICK_DRAG_THRESHOLD) return;
 
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;

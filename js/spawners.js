@@ -205,9 +205,17 @@ function spawnWord(position, item, menuLevel, index, navItems) {  // Add navItem
     spawnZ = position.z;
   }
     const spawnY = 2;
-
     textMesh.position.set(spawnX, spawnY, spawnZ);
     textBody.position.set(spawnX, spawnY, spawnZ);
+
+    // Face the camera once, at spawn time only
+    const camera = window.portfolioApp.camera;
+    if (camera) {
+      textMesh.lookAt(camera.position);
+    }
+
+    textBody.position.set(spawnX, spawnY, spawnZ);
+    textBody.quaternion.copy(textMesh.quaternion);   // <-- give physics the same starting rotation
 
     textBody.velocity.set(
       (Math.random() - 0.5) * 0.5,    // X velocity: change " * 1" multiplier to control speed

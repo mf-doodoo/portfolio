@@ -6,7 +6,9 @@ html, body {
   background-color: transparent;
   overflow: hidden;
   font-family: 'Roboto', Arial, sans-serif;
+  color: #333;
   touch-action: none;  /* Prevent default touch behaviors */
+  cursor: none;  /* Hide the default cursor */
 }
 
 * {

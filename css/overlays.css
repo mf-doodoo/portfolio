@@ -16,11 +16,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: overlaySlideUp 0.8s ease-in-out forwards;
+  animation: overlaySlideUp 0.5s ease-in-out forwards;
 }
 
 .page-overlay.closing {
-  animation: overlaySlideDown 0.8s ease-in-out forwards;
+  animation: overlaySlideDown 0.5s ease-in-out forwards;
 }
 
 @keyframes overlaySlideUp {
