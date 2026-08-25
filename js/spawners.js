@@ -19,15 +19,16 @@ export function spawnInitialGeometry(config) {
 
 // Function to spawn random geometry objects
 function spawnRandomGeometry(position, config) {
-  /*const geometries = [
+  const geometries = [
     new THREE.BoxGeometry(0.3, 0.3, 0.3),
-    new THREE.SphereGeometry(0.2, 16, 16),
-    new THREE.ConeGeometry(0.2, 0.4, 16),
-    new THREE.CylinderGeometry(0.15, 0.15, 0.4, 16),
-    new THREE.TorusGeometry(0.15, 0.06, 16, 32),
-    new THREE.TetrahedronGeometry(0.25),
-    new THREE.OctahedronGeometry(0.2),
-    new THREE.IcosahedronGeometry(0.2)
+    new THREE.BoxGeometry(0.3, 0.3, 0.3),
+    new THREE.BoxGeometry(0.3, 0.3, 0.3),
+    new THREE.BoxGeometry(0.3, 0.3, 0.3),
+    new THREE.BoxGeometry(0.3, 0.3, 0.3),
+    new THREE.BoxGeometry(0.3, 0.3, 0.3),
+    new THREE.BoxGeometry(0.3, 0.3, 0.3),
+    new THREE.BoxGeometry(0.3, 0.3, 0.3),
+    new THREE.BoxGeometry(0.3, 0.3, 0.3)
   ];
 
   const randomGeometry = geometries[Math.floor(Math.random() * geometries.length)];
@@ -83,8 +84,8 @@ function spawnRandomGeometry(position, config) {
   };
 
   config.scene.add(objectMesh);
-  config.geometryObjects.push(objectMesh);*/
-  const objectMesh = getRandomModel();   // <-- replaces THREE.Mesh(randomGeometry, material)
+  config.geometryObjects.push(objectMesh);
+  /*const objectMesh = getRandomModel();   // <-- replaces THREE.Mesh(randomGeometry, material)
 
   // Physics shape: since your models aren't simple primitives,
   // use a Box approximation sized to the model for now (see note below)
@@ -127,7 +128,7 @@ function spawnRandomGeometry(position, config) {
   };
 
   config.scene.add(objectMesh);
-  config.geometryObjects.push(objectMesh);
+  config.geometryObjects.push(objectMesh);*/
 }
 
 // Menu structure and order of spawning

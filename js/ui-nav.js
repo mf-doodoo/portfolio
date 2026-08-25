@@ -44,19 +44,20 @@ export function createNavUI() {
   style.textContent = `
     #name-tag {
       position: fixed;
-      bottom: 5%;
+      top: 5%;
       right: 10%;
-      font-family: sans-serif;
-      font-size: 13px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 60px;
       letter-spacing: 1px;
       color: #fff;
       background-color: #000;
+      padding: 0px 2px;
       z-index: 50;
       pointer-events: none;
       transition: transform 0.4s ease;
     }
     #name-tag.nav-open {
-      transform: translateX(150%);
+      transform: translateX(300%);
       color: #000;
       background-color: #000;
     }
@@ -136,7 +137,7 @@ export function createNavUI() {
       width: 100%;
     }
     #nav-panel li {
-      font-family: sans-serif;
+      font-family: 'Roboto', sans-serif;
       font-size: 22px;
       letter-spacing: 1px;
       color: #fff;
