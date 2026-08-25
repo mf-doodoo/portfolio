@@ -19,7 +19,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header h1 {
@@ -30,7 +29,6 @@ body {
 .back-btn {
   padding: 10px 20px;
   background-color: rgba(255, 255, 255, 0.1);
-  border: 2px solid #fff;
   color: #fff;
   cursor: pointer;
   font-size: 16px;

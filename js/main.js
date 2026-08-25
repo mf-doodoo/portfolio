@@ -5,6 +5,7 @@ import { createIntro } from './intro.js';
 import { createOverlays } from './overlays.js';
 import { spawnInitialGeometry } from './spawners.js';
 import { createNavUI } from './ui-nav.js';
+import { preloadModels } from './model-loader.js';
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -99,11 +100,15 @@ setupEventListeners({
   controls
 });
 
-// Spawn initial geometry
-spawnInitialGeometry({
-  scene,
-  world,
-  geometryObjects: window.portfolioApp.geometryObjects
+// Preload models and spawn initial geometry
+preloadModels().then(() => {
+  spawnInitialGeometry({
+    scene,
+    world,
+    geometryObjects: window.portfolioApp.geometryObjects
+  });
+}).catch(err => {
+  console.error('Failed to load models:', err);
 });
 
 // Animation loop
@@ -175,11 +180,11 @@ function updateLetterGlow() {
   const backgroundPanel = document.getElementById('background-color-panel');
   const app = window.portfolioApp;
   
-  // Color map for different menus
+  // Background color map for different menus
   const colorMap = {
-    'ABOUT': '#FFFF00',     // Yellow
-    'CONTACT': '#0088FF',   // Blue
-    'WORK': '#FF0000'       // Red
+    'ABOUT': '#000000',     // Yellow
+    'CONTACT': '#000000',   // Blue
+    'WORK': '#000000'       // Red
   };
 
   app.letters.forEach(letter => {

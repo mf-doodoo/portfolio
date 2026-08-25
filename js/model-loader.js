@@ -5,9 +5,7 @@ const modelCache = {};
 
 // List your own models here — path + a friendly key
 const MODEL_PATHS = {
-  shapeA: 'models/shape-a.glb',
-  shapeB: 'models/shape-b.glb',
-  shapeC: 'models/shape-c.glb',
+  shapeA: '..\\3d-models\\lowpoly_ardit_head.glb'
   // add as many as you like
 };
 

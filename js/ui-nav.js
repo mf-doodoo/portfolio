@@ -50,13 +50,15 @@ export function createNavUI() {
       font-size: 13px;
       letter-spacing: 1px;
       color: #fff;
-      mix-blend-mode: difference;
+      background-color: #000;
       z-index: 50;
       pointer-events: none;
       transition: transform 0.4s ease;
     }
     #name-tag.nav-open {
       transform: translateX(150%);
+      color: #000;
+      background-color: #000;
     }
 
     #nav-backdrop {

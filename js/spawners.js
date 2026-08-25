@@ -1,6 +1,7 @@
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
+import { getRandomModel } from './model-loader.js';
 
 export function spawnInitialGeometry(config) {
   const numberOfObjects = Math.floor(Math.random() * 6) + 5;
@@ -18,7 +19,7 @@ export function spawnInitialGeometry(config) {
 
 // Function to spawn random geometry objects
 function spawnRandomGeometry(position, config) {
-  const geometries = [
+  /*const geometries = [
     new THREE.BoxGeometry(0.3, 0.3, 0.3),
     new THREE.SphereGeometry(0.2, 16, 16),
     new THREE.ConeGeometry(0.2, 0.4, 16),
@@ -82,15 +83,59 @@ function spawnRandomGeometry(position, config) {
   };
 
   config.scene.add(objectMesh);
+  config.geometryObjects.push(objectMesh);*/
+  const objectMesh = getRandomModel();   // <-- replaces THREE.Mesh(randomGeometry, material)
+
+  // Physics shape: since your models aren't simple primitives,
+  // use a Box approximation sized to the model for now (see note below)
+  const shape = new CANNON.Box(new CANNON.Vec3(0.8, 0.8, 0.8));  // <-- adjust size as needed for your models
+
+  const objectBody = new CANNON.Body({
+    mass: 1,
+    linearDamping: 0.3,
+    angularDamping: 0.3
+  });
+  objectBody.addShape(shape);
+
+  //
+  const spawnX = position.x + (Math.random() - 0.5) * 2;
+  const spawnY = position.y + 2;
+  const spawnZ = position.z + (Math.random() - 0.5) * 2;
+
+  
+  objectMesh.position.set(spawnX, spawnY, spawnZ);
+  objectBody.position.set(spawnX, spawnY, spawnZ);
+
+  
+  objectBody.velocity.set(
+    (Math.random() - 0.5) * 3,
+    Math.random() * 2 + 1,
+    (Math.random() - 0.5) * 3
+  );
+  objectBody.angularVelocity.set(
+    (Math.random() - 0.5) * 5,
+    (Math.random() - 0.5) * 5,
+    (Math.random() - 0.5) * 5
+  );
+
+  config.world.addBody(objectBody);
+
+  objectMesh.userData = {
+    body: objectBody,
+    isGeometry: true,
+    isDraggable: true
+  };
+
+  config.scene.add(objectMesh);
   config.geometryObjects.push(objectMesh);
 }
 
-// Menu structure
+// Menu structure and order of spawning
 export const menuStructure = {
   main: [
+    { text: 'WORK', url: 'work/work.html', isSubmenu: false },
     { text: 'ABOUT', url: null, isSubmenu: true },
-    { text: 'CONTACT', url: null, isSubmenu: true },
-    { text: 'WORK', url: 'work/work.html', isSubmenu: false }
+    { text: 'CONTACT', url: null, isSubmenu: true }
   ],
   about: [
     { text: 'ABOUT ME', url: '#about', isSubmenu: false, isPlaceholder: true }
@@ -98,9 +143,9 @@ export const menuStructure = {
   contact: [
     { text: 'MAIL', url: 'mailto:ardit.stojkaj@gmail.com', isSubmenu: false },
     { text: 'INSTAGRAM', url: 'https://www.instagram.com/mf_doodoo/', isSubmenu: false },
-    { text: 'LINKEDIN', url: 'https://www.linkedin.com/in/ardit-stojkaj-05466b168/', isSubmenu: false },
     { text: 'GITHUB', url: 'https://github.com/mf-doodoo', isSubmenu: false },
-    { text: 'ARTSTATION', url: 'https://mf_doodoo.artstation.com/', isSubmenu: false }
+    { text: 'ARTSTATION', url: 'https://mf_doodoo.artstation.com/', isSubmenu: false },
+    { text: 'LINKEDIN', url: 'https://www.linkedin.com/in/ardit-stojkaj-05466b168/', isSubmenu: false }
   ],
   back: [
     { text: 'BACK', url: null, isSubmenu: false, isBack: true }

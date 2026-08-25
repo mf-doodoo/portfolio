@@ -19,6 +19,11 @@ console.log('Touch device detected:', touchEnabled);
 // Track touched letter for mobile
 let touchedLetter = null;
 
+// HOVER DEBOUNCE (prevents flicker from rapid raycast target switching)
+let pendingHoverWord = null;
+let hoverDebounceTimer = null;
+const HOVER_DEBOUNCE_MS = 150; // milliseconds
+
 // DRAG DETECTION (to distinguish camera orbit from actual clicks)
 let mouseDownPos = { x: 0, y: 0 };
 const CLICK_DRAG_THRESHOLD = 6; // pixels
@@ -321,20 +326,23 @@ function onMouseMove(event, raycaster, mouse, controls, scene, camera) {
 
   // Check letter hover
   const letterIntersects = raycaster.intersectObjects(app.letters);
-  if (letterIntersects.length > 0) {
-    document.body.style.cursor = 'pointer';
-    const wordToHighlight = letterIntersects[0].object.userData.wordId;
-    
-    if (app.hoveredWord !== wordToHighlight) {
-      app.hoveredWord = wordToHighlight;
-      app.updateLetterGlow();
-    }
-  } else {
-    document.body.style.cursor = 'default';
-    if (app.hoveredWord !== null) {
-      app.hoveredWord = null;
-      app.updateLetterGlow();
-    }
+  const newHoverWord = letterIntersects.length > 0
+    ? letterIntersects[0].object.userData.wordId
+    : null;
+
+  document.body.style.cursor = newHoverWord !== null ? 'pointer' : 'default';
+
+  // Debounce the actual glow change
+  if (newHoverWord !== pendingHoverWord) {
+    pendingHoverWord = newHoverWord;
+    clearTimeout(hoverDebounceTimer);
+
+    hoverDebounceTimer = setTimeout(() => {
+      if (app.hoveredWord !== pendingHoverWord) {
+        app.hoveredWord = pendingHoverWord;
+        app.updateLetterGlow();
+      }
+    }, HOVER_DEBOUNCE_MS);
   }
 }
 
