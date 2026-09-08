@@ -9,8 +9,8 @@ let camera = null;
 // TOUCH DETECTION
 const isTouchDevice = () => {
   return (('ontouchstart' in window) ||
-          (navigator.maxTouchPoints > 0) ||
-          (navigator.msMaxTouchPoints > 0));
+    (navigator.maxTouchPoints > 0) ||
+    (navigator.msMaxTouchPoints > 0));
 };
 
 const touchEnabled = isTouchDevice();
@@ -41,7 +41,7 @@ fontLoader.load(
 
 export function setupEventListeners(config) {
   const { scene, camera: cam, renderer, world, raycaster, mouse, controls } = config;
-  
+
   camera = cam;
 
   // MOUSE EVENTS (for desktop)
@@ -92,7 +92,7 @@ function onTouchStart(event, raycaster, mouse, scene, camera) {
 
   if (letterIntersects.length > 0) {
     touchedLetter = letterIntersects[0].object;
-    
+
     // Show touch feedback
     app.hoveredWord = touchedLetter.userData.wordId;
     app.updateLetterGlow();
@@ -228,21 +228,21 @@ function onMouseClick(event, raycaster, mouse, scene, camera) {
     const isBack = clicked.userData.isBack;
     const isPlaceholder = clicked.userData.isPlaceholder;
     const url = clicked.userData.url;
-    
+
     console.log('Clicked:', word, 'menuLevel:', menuLevel);
-    
+
     // Handle BACK button
     if (isBack) {
       spawnLetters(new THREE.Vector3(0, 0, 0), 'main');
       return;
     }
-    
+
     // Handle placeholder (ABOUT)
     if (isPlaceholder) {
       app.showOverlay('about-overlay');
       return;
     }
-    
+
     // Handle submenu triggers
     if (isSubmenu) {
       const submenuMap = {
@@ -255,7 +255,7 @@ function onMouseClick(event, raycaster, mouse, scene, camera) {
       }
       return;
     }
-    
+
     // Handle regular links
     if (url) {
       if (url.startsWith('#')) {
@@ -301,19 +301,20 @@ function onMouseMove(event, raycaster, mouse, controls, scene, camera) {
   // Handle dragging
   if (app.isDragging && app.draggedObject) {
     const dragIntersection = new THREE.Vector3();
-    
+
     raycaster.ray.intersectPlane(app.dragPlane, dragIntersection);
     const newPosition = dragIntersection.sub(app.dragOffset);
     newPosition.y = Math.max(newPosition.y, 0.2);
-    
+
     app.draggedObject.position.copy(newPosition);
     if (app.draggedObject.userData.body) {
       app.draggedObject.userData.body.position.copy(newPosition);
       app.draggedObject.userData.body.velocity.set(0, 0, 0);
       app.draggedObject.userData.body.angularVelocity.set(0, 0, 0);
     }
-    
+
     document.body.style.cursor = 'grabbing';
+    app.updateTooltip(null); // hide tooltip while actively dragging
     return;
   }
 
@@ -321,6 +322,7 @@ function onMouseMove(event, raycaster, mouse, controls, scene, camera) {
   const geometryIntersects = raycaster.intersectObjects(app.geometryObjects);
   if (geometryIntersects.length > 0) {
     document.body.style.cursor = 'grab';
+    app.updateTooltip('drag', event.clientX, event.clientY);
     return;
   }
 
@@ -344,6 +346,21 @@ function onMouseMove(event, raycaster, mouse, controls, scene, camera) {
       }
     }, HOVER_DEBOUNCE_MS);
   }
+
+  if (newHoverWord !== null) {
+    app.updateTooltip('open', event.clientX, event.clientY);
+    return;
+  }
+
+  // Check plane hover (empty 3D space)
+  const planeIntersects = raycaster.intersectObjects(scene.children);
+  const hitPlane = planeIntersects.some(hit => hit.object.geometry instanceof THREE.PlaneGeometry);
+
+  if (hitPlane) {
+    app.updateTooltip('click', event.clientX, event.clientY);
+  } else {
+    app.updateTooltip(null);
+  }
 }
 
 function onMouseDown(event, raycaster, mouse, controls, camera) {
@@ -355,16 +372,16 @@ function onMouseDown(event, raycaster, mouse, controls, camera) {
 
   const app = window.portfolioApp;
   const intersects = raycaster.intersectObjects(app.geometryObjects);
-  
+
   if (intersects.length > 0 && intersects[0].object.userData.isDraggable) {
     controls.enabled = false;
-    
+
     const dragPlane = new THREE.Plane();
     dragPlane.setFromNormalAndCoplanarPoint(
       camera.getWorldDirection(dragPlane.normal),
       intersects[0].point
     );
-    
+
     const dragOffset = new THREE.Vector3();
     dragOffset.copy(intersects[0].point).sub(intersects[0].object.position);
 
@@ -377,12 +394,12 @@ function onMouseDown(event, raycaster, mouse, controls, camera) {
 
 function onMouseUp(controls) {
   const app = window.portfolioApp;
-  
+
   if (app.isDragging && app.draggedObject) {
     if (app.draggedObject.userData.body) {
       app.draggedObject.userData.body.type = CANNON.Body.DYNAMIC;
     }
-    
+
     app.isDragging = false;
     app.draggedObject = null;
     app.dragPlane = null;

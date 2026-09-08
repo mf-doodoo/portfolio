@@ -5,6 +5,7 @@ import { createIntro } from './intro.js';
 import { createOverlays } from './overlays.js';
 import { spawnInitialGeometry } from './spawners.js';
 import { createNavUI } from './ui-nav.js';
+import { createTooltip } from './ui-tooltip.js';
 import { preloadModels, preloadHead, getHeadModel } from './model-loader.js';
 
 const width = window.innerWidth;
@@ -20,6 +21,9 @@ createIntro();
 // Create overlays
 createOverlays();
 createNavUI();
+createOverlays();
+createNavUI();
+const tooltipElement = createTooltip();   // for mouse overlay
 
 // CREATE BACKGROUND COLOR PANEL - Add this BEFORE global app state
 const backgroundPanel = document.createElement('div');
@@ -86,7 +90,8 @@ window.portfolioApp = {
   isNavOpen: false,
   updateLetterGlow,
   showOverlay,
-  closeOverlay
+  closeOverlay,
+  updateTooltip
 };
 
 // Setup events
@@ -155,6 +160,11 @@ function animate(time) {
       const targetQuat = head.quaternion.clone();
       head.quaternion.copy(prevQuat);
       head.quaternion.slerp(targetQuat, 0.05);
+    }
+
+    if (head) {
+      head.position.y = 1.5 + Math.sin(time * 0.001) * 0.1; // slow vertical bob
+      // ...raycasting/slerp as above
     }
 
 
@@ -275,4 +285,15 @@ function updateLetterGlow() {
       overlayElement.classList.add('default-message');
     }
   }
+}
+
+function updateTooltip(text, x, y) {
+  if (!text) {
+    tooltipElement.classList.remove('visible');
+    return;
+  }
+  tooltipElement.textContent = text;
+  tooltipElement.style.left = `${x}px`;
+  tooltipElement.style.top = `${y}px`;
+  tooltipElement.classList.add('visible');
 }

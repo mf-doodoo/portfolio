@@ -47,7 +47,7 @@ export function createNavUI() {
       top: 5%;
       right: 10%;
       font-family: 'Roboto', sans-serif;
-      font-size: 60px;
+      font-size: 100%;
       letter-spacing: 1px;
       color: #fff;
       background-color: #000;

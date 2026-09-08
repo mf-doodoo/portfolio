@@ -57,7 +57,7 @@ body {
 .project-card {
   position: relative;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 5px;
   cursor: pointer;
   aspect-ratio: 1;
   background: #1a1a1a;

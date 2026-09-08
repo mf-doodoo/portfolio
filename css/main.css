@@ -9,7 +9,10 @@ html, body {
   color: #333;
   touch-action: none;  /* Prevent default touch behaviors */
   cursor: none;  /* Hide the default cursor */
+  selector { cursor: none; }
 }
+
+
 
 * {
   box-sizing: border-box;
