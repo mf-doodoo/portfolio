@@ -24,8 +24,18 @@ createNavUI();
 createOverlays();
 createNavUI();
 
-const { tooltip: tooltipElement, cursorDot } = createTooltip();   // <-- destructure both
+const { tooltip: tooltipElement, cursorDot } = createTooltip();
 
+// Cursor dot always tracks the mouse, regardless of overlay/nav state
+window.addEventListener('mousemove', (event) => {
+  cursorDot.style.left = `${event.clientX}px`;
+  cursorDot.style.top = `${event.clientY}px`;
+
+  if (window.portfolioApp.isOverlayOpen || window.portfolioApp.isNavOpen) {
+    cursorDot.classList.add('visible');
+    tooltipElement.classList.remove('visible');
+  }
+});
 // CREATE BACKGROUND COLOR PANEL - Add this BEFORE global app state
 const backgroundPanel = document.createElement('div');
 backgroundPanel.id = 'background-color-panel';

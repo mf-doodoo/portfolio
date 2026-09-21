@@ -44,7 +44,7 @@ export function createTooltip() {
       opacity: 0;
       transform: translate(-50%, -50%);
       transition: opacity 0.15s ease, width 0.15s ease, height 0.15s ease;
-      z-index: 102;
+      z-index: 2001;
     }
     #cursor-dot.visible {
       opacity: 1;
