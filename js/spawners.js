@@ -44,9 +44,9 @@ function spawnRandomGeometry(position, config) {
 
   let shape;
   if (randomGeometry instanceof THREE.SphereGeometry) {
-    shape = new CANNON.Sphere(0.2);
+    shape = new CANNON.Sphere(0.3);
   } else {
-    shape = new CANNON.Box(new CANNON.Vec3(0.2, 0.2, 0.2));
+    shape = new CANNON.Box(new CANNON.Vec3(0.3, 0.3, 0.3));
   }
 
   const objectBody = new CANNON.Body({

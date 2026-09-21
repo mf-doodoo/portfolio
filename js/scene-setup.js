@@ -20,7 +20,7 @@ export function initScene(width, height) {
   const mouse = new THREE.Vector2();
 
   // Plane geometry
-  const planeGeometry = new THREE.PlaneGeometry(20, 20);
+  const planeGeometry = new THREE.PlaneGeometry(50, 50);
   const planeMaterial = new THREE.MeshStandardMaterial({ 
     opacity: 0, 
     transparent: true,
@@ -47,8 +47,8 @@ export function initScene(width, height) {
   cameraPole.add(camera);
 
   // Lights
-  const ambientLight = new THREE.AmbientLight(0x404040);
-  const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.3);
+  const ambientLight = new THREE.AmbientLight(0x404040, 1);
+  const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
   directionalLight.position.set(5, 10, 5);
   

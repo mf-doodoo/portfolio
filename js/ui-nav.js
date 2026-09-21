@@ -43,7 +43,7 @@ export function createNavUI() {
   const style = document.createElement('style');
   style.textContent = `
     #name-tag {
-      position: fixed;
+    position: fixed;
       top: 5%;
       right: 10%;
       font-family: 'Roboto', sans-serif;

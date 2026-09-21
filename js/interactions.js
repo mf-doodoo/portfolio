@@ -44,41 +44,44 @@ export function setupEventListeners(config) {
 
   camera = cam;
 
-  // MOUSE EVENTS (for desktop)
-  if (!touchEnabled) {
-    window.addEventListener('click', (event) => {
-      onMouseClick(event, raycaster, mouse, scene, camera);
-    });
+  window.addEventListener('pointerdown', (event) => {
+    mouseDownPos = { x: event.clientX, y: event.clientY };   // <-- add this back
 
-    window.addEventListener('mousemove', (event) => {
-      onMouseMove(event, raycaster, mouse, controls, scene, camera);
-    });
-  }
 
-  // TOUCH EVENTS (for mobile/tablet)
-  if (touchEnabled) {
-    window.addEventListener('touchstart', (event) => {
+    if (event.pointerType === 'touch') {
       onTouchStart(event, raycaster, mouse, scene, camera);
-    });
-
-    window.addEventListener('touchmove', (event) => {
-      onTouchMove(event, raycaster, mouse, controls, scene, camera);
-    });
-
-    window.addEventListener('touchend', () => {
-      onTouchEnd();
-    });
-  }
-
-  window.addEventListener('mousedown', (event) => {
-    mouseDownPos = { x: event.clientX, y: event.clientY };
-    onMouseDown(event, raycaster, mouse, controls, camera);
+    } else {
+      onMouseDown(event, raycaster, mouse, controls, camera);
+    }
   });
 
-  window.addEventListener('mouseup', () => {
-    onMouseUp(controls);
+  window.addEventListener('pointermove', (event) => {
+    if (event.pointerType === 'touch') {
+      onTouchMove(event, raycaster, mouse, controls, scene, camera);
+    } else {
+      onMouseMove(event, raycaster, mouse, controls, scene, camera);
+    }
+  });
+
+  window.addEventListener('pointerup', (event) => {
+    if (event.pointerType === 'touch') {
+      onTouchEnd();
+    } else {
+      onMouseUp(controls);
+    }
+  });
+
+  window.addEventListener('click', (event) => {
+    if (event.pointerType === 'touch') return; // touch handles its own tap logic via pointerup -> onTouchEnd
+    onMouseClick(event, raycaster, mouse, scene, camera);
   });
 }
+
+window.addEventListener('touchstart', (event) => {
+  console.log('REAL touchstart fired', event);
+  usingTouch = true;
+  onTouchStart(event, raycaster, mouse, scene, camera);
+}, { passive: true });
 
 // TOUCH EVENT HANDLERS
 function onTouchStart(event, raycaster, mouse, scene, camera) {
@@ -314,7 +317,7 @@ function onMouseMove(event, raycaster, mouse, controls, scene, camera) {
     }
 
     document.body.style.cursor = 'grabbing';
-    app.updateTooltip(null); // hide tooltip while actively dragging
+        app.updateTooltip(null, event.clientX, event.clientY);   // <-- now passes coordinates
     return;
   }
 
@@ -359,7 +362,7 @@ function onMouseMove(event, raycaster, mouse, controls, scene, camera) {
   if (hitPlane) {
     app.updateTooltip('click', event.clientX, event.clientY);
   } else {
-    app.updateTooltip(null);
+    app.updateTooltip(null, event.clientX, event.clientY);   // <-- now passes coordinates
   }
 }
 

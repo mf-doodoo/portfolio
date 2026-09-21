@@ -23,7 +23,8 @@ createOverlays();
 createNavUI();
 createOverlays();
 createNavUI();
-const tooltipElement = createTooltip();   // for mouse overlay
+
+const { tooltip: tooltipElement, cursorDot } = createTooltip();   // <-- destructure both
 
 // CREATE BACKGROUND COLOR PANEL - Add this BEFORE global app state
 const backgroundPanel = document.createElement('div');
@@ -205,15 +206,6 @@ function closeOverlay(overlayId) {
   renderer.setAnimationLoop(animate);
 }
 
-/*function getRandomColor() {
-var letters = '0123456789ABCDEF';
-var color = '#';
-for (var i = 0; i < 6; i++) {
-color += letters[Math.floor(Math.random() * 16)];
-}
-return color;
-}*/
-
 function updateLetterGlow() {
   const overlayElement = document.getElementById('word-overlay');
   const backgroundPanel = document.getElementById('background-color-panel');
@@ -290,10 +282,14 @@ function updateLetterGlow() {
 function updateTooltip(text, x, y) {
   if (!text) {
     tooltipElement.classList.remove('visible');
+    cursorDot.style.left = `${x}px`;
+    cursorDot.style.top = `${y}px`;
+    cursorDot.classList.add('visible');
     return;
   }
   tooltipElement.textContent = text;
   tooltipElement.style.left = `${x}px`;
   tooltipElement.style.top = `${y}px`;
   tooltipElement.classList.add('visible');
+  cursorDot.classList.remove('visible');
 }
