@@ -3,9 +3,13 @@ export function createTooltip() {
   tooltip.id = 'mouse-tooltip';
   document.body.appendChild(tooltip);
 
-  const cursorDot = document.createElement('div');
-  cursorDot.id = 'cursor-dot';
-  document.body.appendChild(cursorDot);
+  const cursorOuter = document.createElement('div');
+  cursorOuter.id = 'cursor-outer';
+  document.body.appendChild(cursorOuter);
+
+  const cursorInner = document.createElement('div');
+  cursorInner.id = 'cursor-inner';
+  document.body.appendChild(cursorInner);
 
   const style = document.createElement('style');
   style.textContent = `
@@ -31,26 +35,40 @@ export function createTooltip() {
       opacity: 1;
     }
 
-    #cursor-dot {
+    #cursor-outer {
       position: fixed;
       top: 0;
       left: 0;
-      width: 10px;
-      height: 10px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: #fff;
-      mix-blend-mode: difference;
       pointer-events: none;
       opacity: 0;
       transform: translate(-50%, -50%);
-      transition: opacity 0.15s ease, width 0.15s ease, height 0.15s ease;
-      z-index: 2001;
+      transition: opacity 0.15s ease;
+      z-index: 58;
     }
-    #cursor-dot.visible {
+    #cursor-inner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #000;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.15s ease;
+      z-index: 59;
+    }
+    #cursor-outer.visible,
+    #cursor-inner.visible {
       opacity: 1;
     }
   `;
   document.head.appendChild(style);
 
-  return { tooltip, cursorDot };
+  return { tooltip, cursorOuter, cursorInner };
 }

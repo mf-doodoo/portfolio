@@ -85,56 +85,12 @@ function spawnRandomGeometry(position, config) {
 
   config.scene.add(objectMesh);
   config.geometryObjects.push(objectMesh);
-  /*const objectMesh = getRandomModel();   // <-- replaces THREE.Mesh(randomGeometry, material)
-
-  // Physics shape: since your models aren't simple primitives,
-  // use a Box approximation sized to the model for now (see note below)
-  const shape = new CANNON.Box(new CANNON.Vec3(0.8, 0.8, 0.8));  // <-- adjust size as needed for your models
-
-  const objectBody = new CANNON.Body({
-    mass: 1,
-    linearDamping: 0.3,
-    angularDamping: 0.3
-  });
-  objectBody.addShape(shape);
-
-  //
-  const spawnX = position.x + (Math.random() - 0.5) * 2;
-  const spawnY = position.y + 2;
-  const spawnZ = position.z + (Math.random() - 0.5) * 2;
-
-  
-  objectMesh.position.set(spawnX, spawnY, spawnZ);
-  objectBody.position.set(spawnX, spawnY, spawnZ);
-
-  
-  objectBody.velocity.set(
-    (Math.random() - 0.5) * 3,
-    Math.random() * 2 + 1,
-    (Math.random() - 0.5) * 3
-  );
-  objectBody.angularVelocity.set(
-    (Math.random() - 0.5) * 5,
-    (Math.random() - 0.5) * 5,
-    (Math.random() - 0.5) * 5
-  );
-
-  config.world.addBody(objectBody);
-
-  objectMesh.userData = {
-    body: objectBody,
-    isGeometry: true,
-    isDraggable: true
-  };
-
-  config.scene.add(objectMesh);
-  config.geometryObjects.push(objectMesh);*/
 }
 
 // Menu structure and order of spawning
 export const menuStructure = {
   main: [
-    { text: 'WORK', url: 'work/work.html', isSubmenu: false },
+    { text: 'PROJECTS', url: 'projects/projects.html', isSubmenu: false },
     { text: 'ABOUT', url: null, isSubmenu: true },
     { text: 'CONTACT', url: null, isSubmenu: true }
   ],

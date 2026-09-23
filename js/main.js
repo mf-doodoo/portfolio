@@ -24,18 +24,23 @@ createNavUI();
 createOverlays();
 createNavUI();
 
-const { tooltip: tooltipElement, cursorDot } = createTooltip();
+const { tooltip: tooltipElement, cursorOuter, cursorInner } = createTooltip();
 
 // Cursor dot always tracks the mouse, regardless of overlay/nav state
 window.addEventListener('mousemove', (event) => {
-  cursorDot.style.left = `${event.clientX}px`;
-  cursorDot.style.top = `${event.clientY}px`;
+  cursorOuter.style.left = `${event.clientX}px`;
+  cursorOuter.style.top = `${event.clientY}px`;
+  cursorInner.style.left = `${event.clientX}px`;
+  cursorInner.style.top = `${event.clientY}px`;
 
   if (window.portfolioApp.isOverlayOpen || window.portfolioApp.isNavOpen) {
-    cursorDot.classList.add('visible');
+    cursorOuter.classList.add('visible');
+    cursorInner.classList.add('visible');
     tooltipElement.classList.remove('visible');
   }
 });
+
+
 // CREATE BACKGROUND COLOR PANEL - Add this BEFORE global app state
 const backgroundPanel = document.createElement('div');
 backgroundPanel.id = 'background-color-panel';
@@ -51,35 +56,29 @@ backgroundStyle.textContent = `
     height: 100%;
     z-index: -2;
     background-color: #FFFFFF;
-    transition: background-color 0.5s ease;
+    transition: background-color 0.8s ease;
   }
 
   #background-color-panel.sliding-in {
-    animation: bgSlideIn 0.6s ease-out forwards;
+    animation: bgSlideIn 0.5s ease-out forwards;
   }
 
   #background-color-panel.sliding-out {
-    animation: bgSlideOut 0.4s ease-in forwards;
+    animation: bgSlideOut 0.5s ease-in forwards;
   }
 
   @keyframes bgSlideIn {
-    from {
-      transform: translateX(-100%);
-    }
-    to {
-      transform: translateX(0);
-    }
+    from {transform: translateX(-100%);}
+    to {transform: translateX(0);}
   }
 
   @keyframes bgSlideOut {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-100%);
-    }
+    from {transform: translateX(0);}
+    to {transform: translateX(100%);}
   }
 `;
+
+
 document.head.appendChild(backgroundStyle);
 
 window.portfolioApp = {
@@ -174,7 +173,7 @@ function animate(time) {
     }
 
     if (head) {
-      head.position.y = 1.5 + Math.sin(time * 0.001) * 0.1; // slow vertical bob
+      head.position.y = 1.5 + Math.sin(time * 0.002) * 0.5; // slow vertical bob
       // ...raycasting/slerp as above
     }
 
@@ -223,10 +222,15 @@ function updateLetterGlow() {
 
   // Background color map for different menus
   const colorMap = {
-    'ABOUT': '#000000',     // Yellow
-    'CONTACT': '#000000',   // Blue
-    'WORK': '#000000'       // Red
-  };
+  'ABOUT': '#000000',
+  'CONTACT': '#000000',
+  'PROJECTS': '#000000',
+  'MAIL': '#000000',
+  'INSTAGRAM': '#000000',
+  'LINKEDIN': '#000000',
+  'GITHUB': '#000000',
+  'ARTSTATION': '#000000'
+};
 
   app.letters.forEach(letter => {
     const shouldGlow = (app.hoveredWord !== null && letter.userData.wordId === app.hoveredWord);
@@ -292,14 +296,18 @@ function updateLetterGlow() {
 function updateTooltip(text, x, y) {
   if (!text) {
     tooltipElement.classList.remove('visible');
-    cursorDot.style.left = `${x}px`;
-    cursorDot.style.top = `${y}px`;
-    cursorDot.classList.add('visible');
+    cursorOuter.style.left = `${x}px`;
+    cursorOuter.style.top = `${y}px`;
+    cursorInner.style.left = `${x}px`;
+    cursorInner.style.top = `${y}px`;
+    cursorOuter.classList.add('visible');
+    cursorInner.classList.add('visible');
     return;
   }
   tooltipElement.textContent = text;
   tooltipElement.style.left = `${x}px`;
   tooltipElement.style.top = `${y}px`;
   tooltipElement.classList.add('visible');
-  cursorDot.classList.remove('visible');
+  cursorOuter.classList.remove('visible');
+  cursorInner.classList.remove('visible');
 }

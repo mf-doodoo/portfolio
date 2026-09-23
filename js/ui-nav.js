@@ -72,7 +72,7 @@ export function createNavUI() {
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.4s ease;
-      z-index: 80;
+      z-index: 49;
     }
     #nav-backdrop.open {
       opacity: 1;
@@ -89,7 +89,7 @@ export function createNavUI() {
       background: black;
       border: none;
       cursor: pointer;
-      z-index: 100;
+      z-index: 50;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -123,7 +123,7 @@ export function createNavUI() {
       background: rgba(0, 0, 0, 0.9);
       transform: translateX(100%);
       transition: transform 0.4s ease;
-      z-index: 90;
+      z-index: 50;
       display: flex;
       align-items: center;
     }
